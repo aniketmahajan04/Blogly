@@ -8,7 +8,7 @@ export const Input = ({type, placeholder}: InputProps) => {
     <input type={type} placeholder={placeholder} 
       className="w-full
         p-2.5 border 
-        border-custom-ash-500
+        border-custom-as h-500
         rounded-sm
         text-base
         "/>
