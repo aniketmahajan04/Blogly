@@ -1,2 +1,14 @@
 @import "tailwindcss";
 
+@layer utilities {
+  .bg-custom-ash-300 {
+    background-color: #f0f0f0
+  }
+  /* Button color */
+  .bg-custom-ash-700 { 
+    background-color: #3e424e
+  }
+  .border-custom-ash-500 {
+    border-color: #ddd
+  }
+}

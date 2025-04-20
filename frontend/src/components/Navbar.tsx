@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Input } from "./Input.tsx";
 export const Navbar = () => {
 
   return (
@@ -10,10 +11,11 @@ export const Navbar = () => {
 
           <div>
             <div>
-              <input 
-                type="text"
-                placeholder="Search Blog"
-              />
+              {/* <input  */}
+              {/*   type="text" */}
+              {/*   placeholder="Search Blog" */}
+              {/* /> */}
+              <Input type="text" placeholder="Username"/>
             </div>
           </div>
         </div>
