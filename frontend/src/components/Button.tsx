@@ -1,9 +1,11 @@
+import { ReactElement } from "react";
 
 interface ButtonProps {
-  text: string;
+  text?: string;
   onClick: () => void;
+  icon?: ReactElement;
 }
-export const Button = ({text, onClick}: ButtonProps) => {
+export const Button = ({text, onClick, icon}: ButtonProps) => {
 
   return (
     <button
@@ -15,6 +17,10 @@ export const Button = ({text, onClick}: ButtonProps) => {
                   cursor-pointer
                   rounded-md
                   text-base"
-    >{text}</button>
+    >
+      <div className="flex items-center justify-center">
+        {icon}
+      </div>
+      {text}</button>
   )
 }
