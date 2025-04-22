@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom"
 
 const navItems = [
   { name: 'Home', path: '/' },
-  { name: "Categories", path: "/categories" },
-  { name: "About", path: "/About" }
+  { name: "About", path: "/About" },
+  { name: "SavePosts", path: "/saveposts" }
 ]
 
 const isActive = (path: string) => {
@@ -15,17 +15,17 @@ const isActive = (path: string) => {
 
 export const Navbar = () => {
   // const [isDropdown, setIsDropdown] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  function handleProfileClick() {
-    navigate("/Profile")
-  }
+  // function handleProfileClick() {
+  //   navigate("/Profile")
+  // }
 
   return (
     <header className="border-b z-50 right-0 left-0 top-0 fixed">
       
       {/* Logo section */}
-      <div className="container flex justify-between items-center px-4 py-4 mx-auto">
+      <div className="container flex justify-between items-center px-4 py-2 mx-auto">
         {/* <Link to={"/"}>  className="flex items-center space-x-2" */}
           <span className="text-2xl font-Bold text-custom-ash-900">BlogAI</span>
         {/* </Link> */}
@@ -50,7 +50,7 @@ export const Navbar = () => {
 
               <div className="relative group">
                 <button className="flex items-center space-x-2 focus:outline-none"
-                  onClick={handleProfileClick}
+                  onClick={() => alert("Click")}
                 >
                 {/* add logic id user had profile */}
                 <div className="rounded-full w-10 h-10 flex items-center justify-center">
