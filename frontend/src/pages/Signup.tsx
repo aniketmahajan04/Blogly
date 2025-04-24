@@ -23,7 +23,9 @@ export const SignUp = () => {
               <label className={`${labelStyles}`}>Password</label>
               <Input type="password" placeholder="********" />
             </div>
-            <Button text="SignUp"
+            <Button 
+                text="SignUp"
+                variant="signup"
                 onClick={() => alert("clicked")}
             />
           </form>

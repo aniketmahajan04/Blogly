@@ -1,16 +1,17 @@
-import { Eye, LogOut, PenSquare, Trash2, User } from "lucide-react"
+import { BookMarked, Eye, LogOut, PenSquare, Trash2 } from "lucide-react"
+import { Button } from "../components/Button"
 
 export const Profile = () => {
 
   return (
     <div>
       {/* Profile detailes div */}
-      <div className="flex justify-center items-center h-screen w-full bg-red-400">
+      <div className="flex justify-center items-center h-screen w-full bg-custom-ash-300">
       {/* profile card div */}
-        <div className="flex flex-col items-center w-[80%] h-[80%] bg-yellow-300 rounded-2xl shadow-xl">
+        <div className="flex flex-col items-center w-[80%] h-[80%] rounded-2xl shadow-xl bg-white">
         
         {/* 1 user img and name div */}
-          <div className="flex items-center bg-blue-400 p-2 w-[90%] mt-5 rounded-lg">
+          <div className="flex items-center p-2 w-[90%] mt-5 rounded-lg">
             <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center ml-4">
               <img 
                 src="C:\Users\gaura\Videos\Screenshots" 
@@ -32,15 +33,25 @@ export const Profile = () => {
             </div>
 
             <div className="ml-auto mr-6 flex space-x-4">
-              <button className="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold shadow hover:bg-blue-100 transition">
-                Detailes
-              </button>
-              <button className="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold shadow hover:bg-blue-100 transition">
-                Update Profile
-              </button>
-              <button className="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold shadow hover:bg-blue-100 transition">
-                Saved Posts
-              </button>
+              <Button 
+                text="Detailes"
+                variant="profile"
+                onClick={() => alert("clicked")}
+                >
+              </Button>
+              <Button 
+                text="Update profile"
+                variant="profile"
+                onClick={() => alert("clicked")}
+                >
+              </Button>
+              <Button 
+              icon={<BookMarked />}
+                variant="profile"
+                onClick={() => alert("clicked")}
+                >
+              </Button>
+              
             </div>
 
           </div>
@@ -55,16 +66,16 @@ export const Profile = () => {
             <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   post
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Category
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Published
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Stats  
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -74,7 +85,7 @@ export const Profile = () => {
             </thead>
             <tbody className="bg-white devide-y divide-gray-200">
               <tr className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div>
                   {/* Imgae div */}
                   <div>
@@ -90,18 +101,18 @@ export const Profile = () => {
                 </div>
               </td>
 
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 text-center py-4 whitespace-nowrap">
                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-teal-100 text-teal-800">
                   TechBlog
                 </span>
               </td>
 
-              <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-2 whitespace-nowrap text-sm text-center text-gray-500">
                 {Date.now()}
               </td>
 
-              <td>
-                <div className="flex space-x-4">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
+                <div className="flex justify-center space-x-4">
                   <span className="flex items-center">
                     <span className="mr-1">()</span> 53 
                   </span>
@@ -115,7 +126,7 @@ export const Profile = () => {
               </td>
 
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div className="flex justify-end space-x-2">
+                <div className="flex justify-center space-x-2">
                 {/* replace with Link tag */}
                   <span className="text-gray-500 hover:text-gray-700 p-1">
                     <Eye size={18}/>
@@ -123,11 +134,16 @@ export const Profile = () => {
                   <span className="text-gray-500 hover:text-gray-700 p-1">
                     <PenSquare size={18}/>
                   </span>
-                  <button
-                    // onClick={() => handleDeletePost(post.id)}
-                    className="text-gray-500 hover:text-red-400 p-1">
-                    <Trash2 size={18}/>
-                  </button>
+                  {/* <button */}
+                  {/*   // onClick={() => handleDeletePost(post.id)} */}
+                  {/*   className="text-gray-500 hover:text-red-400 p-1"> */}
+                  {/*   <Trash2 size={18}/> */}
+                  {/* </button> */}
+                  <Button 
+                    icon={ <Trash2 size={18}/>}
+                    variant="trash"
+                    onClick={() => alert("clicked")}
+                  ></Button>
                 </div>
               </td>
 
@@ -140,9 +156,12 @@ export const Profile = () => {
         {/* 2 div end */}
 
         <div className="mt-auto mr-auto  ml-12 mb-3 bottom-4 left-4">
-          <button className="py-2 px-4 border text-custom-ash-900  rounded-lg">
-            <LogOut size={20} className="hover:text-red-400"/>
-          </button>
+          <Button
+            onClick={() => alert("clicked")}
+            variant="logout"
+            icon={<LogOut size={20} className="hover:text-red-400"/>}
+          >
+          </Button>
         </div>
         </div>
       </div>
