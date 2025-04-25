@@ -4,6 +4,7 @@ import { GoogleIcon } from "./icons/GoogleIcon";
 import { GithubIcon } from "./icons/Github";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
+import BlogCard from "./components/BlogCard";
 
 function App() {
 
@@ -12,7 +13,8 @@ function App() {
       {/* <SignUp /> */}
       {/* <Login /> */}
       <Navbar />
-      <Profile /> 
+      {/* <Profile />  */}
+      <BlogCard post={'feature'},/>
     </>
   )
 }
