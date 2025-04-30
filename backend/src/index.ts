@@ -9,7 +9,8 @@ import session from "express-session";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { CLIENTID, CLIENTSECRET, PORT } from "./config";
 import type { RequestHandler } from "express";
-import bodyParser from "body-parser";
+import { prismaClient } from "./lib/db";
+import { AuthProvider } from "@prisma/client";
 
 async function init() {
 
@@ -26,18 +27,51 @@ async function init() {
   const app = express();
 
   const server = new ApolloServer({
+    //graphql need its own enum 
     typeDefs: `
+      enum AuthProvider {
+        GOOGLE
+        EMAIL
+      }
+
       type Query {
         hello: String
+      }
+      type Mutation {
+        createUser(email: String!, password: String!, name: String!, provider: AuthProvider!): Boolean        
       }
     `,
     resolvers: {
       Query: {
         hello: () => "Hello world!"
+      },
+      Mutation: {
+        createUser: async(_, 
+                    {
+                      email, 
+                      password, 
+                      name, 
+                      provider
+                    }:{
+                      email: string, 
+                      password: string, 
+                      name: string, 
+                      provider: AuthProvider
+                    }
+                  ) => {
+                    await prismaClient.user.create({
+                      data: {
+                        email,
+                        password,
+                        name,
+                        provider
+                      }
+                    })
+                    return true;
+                  }
       }
-    } 
+    }
   })
-
 
   app.use(express.json());
   await server.start();
