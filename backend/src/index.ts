@@ -44,7 +44,6 @@ async function init() {
   app.use("/graphql",
           (expressMiddleware(server, {
             context: async ({req}) => {
-              console.log("req", req.body);
               
               return {}
             }
