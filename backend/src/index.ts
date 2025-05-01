@@ -11,6 +11,7 @@ import { CLIENTID, CLIENTSECRET, PORT } from "./config";
 import type { RequestHandler } from "express";
 import { prismaClient } from "./lib/db";
 import { AuthProvider } from "@prisma/client";
+import { prototype } from "stream";
 
 async function init() {
 
@@ -99,13 +100,52 @@ async function init() {
           clientID: CLIENTID,
           clientSecret: CLIENTSECRET,
           callbackURL: "http://localhost:3000/auth/google/callback"      
-      }, (accessToken: any, refreshToken: any, profile: any, done: (arg0: null, arg1: any) => any) => {
+      },async (accessToken: any, refreshToken: any, profile: any, done: (error: Error | null, user: any) => void) => {
+            try {
+              // console.log(profile._json);
+              const { name, email } = profile._json;
+
+              if(!email){
+                return done(new Error("No email found in Google profile"), null);
+              }
+
+              let user = await prismaClient.user.findUnique({
+                where: {
+                  email: email
+                }
+              })
+
+              if(!user) {
+                user = await prismaClient.user.create({
+                  data: {
+                    email,
+                    name,
+                    provider: AuthProvider.GOOGLE
+                  }
+                })
+              }
+              return done(null, user);
+            } catch (error) {
+              console.error("Error in Google Strategy:", error);
+            }
           return done(null, profile);
       })
   )
 
-  passport.serializeUser((user: Express.User, done) => done(null, user));
-  passport.deserializeUser((user: Express.User, done) => done(null, user));
+  passport.serializeUser((user: any, done) => done(null, user.id));
+  passport.deserializeUser( async (id: string, done) => {
+    try{
+      const user = await prismaClient.user.findUnique({
+        where: {
+          id: id,
+        }
+      })
+      done(null, user);
+    } catch (error) {
+      console.error("Error deserializing user:", error);
+      done(error, null);
+    }
+  });
 
   app.get("/", (req, res) => {
       res.send("<a href='/auth/google'>Login with google</a>");
@@ -123,8 +163,11 @@ async function init() {
   )
 
   app.get("/profile", (req, res) => {
-      const user = req.user as GoogleProfile;
-      res.send(`Welcome ${user?.displayName || 'User'}`)
+    if(!req.isAuthenticated()){
+      return res.redirect("/");
+    }
+      const user = req.user as any;
+      res.send(`Welcome ${user?.name || 'User'}`)
   })
 
   app.get("/logout", (req, res) => {
