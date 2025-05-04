@@ -11,7 +11,6 @@ import { CLIENTID, CLIENTSECRET, PORT } from "./config";
 import type { RequestHandler } from "express";
 import { prismaClient } from "./lib/db";
 import { AuthProvider } from "@prisma/client";
-import { prototype } from "stream";
 
 async function init() {
 
@@ -39,7 +38,8 @@ async function init() {
         hello: String
       }
       type Mutation {
-        createUser(email: String!, password: String!, name: String!, provider: AuthProvider!): Boolean        
+        createUser(email: String!, password: String!, name: String!, provider: AuthProvider!): Boolean
+        login(email: String!, password: String!): Boolean
       }
     `,
     resolvers: {
@@ -69,7 +69,11 @@ async function init() {
                       }
                     })
                     return true;
-                  }
+                  },
+        login: async(_, {email, password}: {email: string, password: string}) => {
+          console.log(email, password);;
+          return true;
+        }
       }
     }
   })
@@ -185,3 +189,4 @@ async function init() {
 init().catch((error) => {
   console.error("Error initializing server:", error);
 });
+
