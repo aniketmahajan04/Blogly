@@ -2,90 +2,22 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
-import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import passport from "passport";
 import session from "express-session";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { CLIENTID, CLIENTSECRET, PORT } from "./config";
-import type { RequestHandler } from "express";
 import { prismaClient } from "./lib/db";
 import { AuthProvider } from "@prisma/client";
+import createApolloGraphqlServer from "./graphql";
 
 async function init() {
 
-  interface GoogleProfile {
-      displayName?: string;
-  }
-
-  // declare module 'express' {
-  //     interface User {
-  //         displayName?: string;
-  //     }
-  // }
-
   const app = express();
 
-  const server = new ApolloServer({
-    //graphql need its own enum 
-    typeDefs: `
-      enum AuthProvider {
-        GOOGLE
-        EMAIL
-      }
-
-      type Query {
-        hello: String
-      }
-      type Mutation {
-        createUser(email: String!, password: String!, name: String!, provider: AuthProvider!): Boolean
-        login(email: String!, password: String!): Boolean
-      }
-    `,
-    resolvers: {
-      Query: {
-        hello: () => "Hello world!"
-      },
-      Mutation: {
-        createUser: async(_, 
-                    {
-                      email, 
-                      password, 
-                      name, 
-                      provider
-                    }:{
-                      email: string, 
-                      password: string, 
-                      name: string, 
-                      provider: AuthProvider
-                    }
-                  ) => {
-                    await prismaClient.user.create({
-                      data: {
-                        email,
-                        password,
-                        name,
-                        provider
-                      }
-                    })
-                    return true;
-                  },
-        login: async(_, {email, password}: {email: string, password: string}) => {
-          console.log(email, password);;
-          return true;
-        }
-      }
-    }
-  })
-
   app.use(express.json());
-  await server.start();
   app.use("/graphql",
-          (expressMiddleware(server, {
-            context: async ({req}) => {
-              return {}
-            }
-          }) as unknown) as RequestHandler);
+          (expressMiddleware(await createApolloGraphqlServer())));
 
   app.use(
       session({
