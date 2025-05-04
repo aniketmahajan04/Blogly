@@ -83,7 +83,6 @@ async function init() {
   app.use("/graphql",
           (expressMiddleware(server, {
             context: async ({req}) => {
-              
               return {}
             }
           }) as unknown) as RequestHandler);
