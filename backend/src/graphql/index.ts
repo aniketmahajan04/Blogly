@@ -1,61 +1,32 @@
 import { ApolloServer } from '@apollo/server';
+import { User } from './user';
 
 async function createApolloGraphqlServer() {
 
   const gqlServer = new ApolloServer({
     //graphql need its own enum 
     typeDefs: `
-      enum AuthProvider {
-        GOOGLE
-        EMAIL
-      }
-
       type Query {
         hello: String
       }
+
       type Mutation {
-        createUser(email: String!, password: String!, name: String!, provider: AuthProvider!): Boolean
-        login(email: String!, password: String!): Boolean
+        ${User.mutations}
       }
     `,
     resolvers: {
       Query: {
-        hello: () => "Hello world!"
+        ...User.resolvers.queries
       },
+      
       Mutation: {
-        createUser: async(_, 
-                    {
-                      email, 
-                      password, 
-                      name, 
-                      provider
-                    }:{
-                      email: string, 
-                      password: string, 
-                      name: string, 
-                      provider: AuthProvider
-                    }
-                  ) => {
-                    await prismaClient.user.create({
-                      data: {
-                        email,
-                        password,
-                        name,
-                        provider
-                      }
-                    })
-                    return true;
-                  },
-        login: async(_, {email, password}: {email: string, password: string}) => {
-          console.log(email, password);;
-          return true;
-        }
+        ...User.resolvers.mutations
       }
     }
   })
 
   await gqlServer.start();
-  
+
   return gqlServer;
 }
 
