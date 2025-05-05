@@ -1,15 +1,11 @@
+import UserService, { UserInterface } from "../../services/user";
 
 const queries = {};
 
 const mutations = {
-  createUser: async (_: any, {
-      email, password, name
-    }:{
-      email: string,
-      password: string,
-      name: string
-    }) => {
-      return `${email} and ${name}`
+  createUser: async (_: any, payload: UserInterface) => {
+    const res = await UserService.createUser(payload);
+      return res.id;
   }
 };
 
