@@ -7,7 +7,7 @@ async function createApolloGraphqlServer() {
     //graphql need its own enum 
     typeDefs: `
       type Query {
-        hello: String
+        ${User.queries}
       }
 
       type Mutation {

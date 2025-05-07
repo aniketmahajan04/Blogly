@@ -1,6 +1,8 @@
+import JWT from 'jsonwebtoken';
 import { createHmac, randomBytes } from "node:crypto";
 import { prismaClient } from "../lib/db";
 import { AuthProvider } from "@prisma/client";
+import { JWT_SECRET } from "../config";
 
 export interface UserInterface {
   email: string;
@@ -8,14 +10,27 @@ export interface UserInterface {
   name: string;
 }
 
+export interface GetUserByToken {
+  email: string;
+  password: string;
+}
+
 class UserService {
 
-  public static createUser(user: UserInterface){
-      const { email, password, name } = user;
-      const salt = randomBytes(32).toString();
+  public static generateHash(salt: string, password: string) {
+
       const hashedPassword = createHmac("sha256", salt)
             .update(password)
             .digest("hex");
+
+      return hashedPassword;
+  }
+
+  public static createUser(user: UserInterface){
+      const { email, password, name } = user;
+      const salt = randomBytes(32).toString("hex");
+      const hashedPassword = UserService.generateHash(salt, password);
+
       return prismaClient.user.create({
         data: {
           email,
@@ -26,6 +41,38 @@ class UserService {
         }
       })
   }
+
+  public static getUserByEmail(email: string) {
+    return prismaClient.user.findUnique({
+      where: {
+        email
+      }
+    })
+  }
+  
+  public static async getUserByToken(paylod: GetUserByToken){
+    const { email, password } = paylod;
+    const user = await UserService.getUserByEmail(email);
+    if(!user) {
+      throw new Error("User not found");
+    }
+
+    const userSalt = user.salt;
+    if(!userSalt) {
+      throw new Error("User salt not found")
+    }
+
+    const userHashedPassword = UserService.generateHash(userSalt, password);
+
+    if(userHashedPassword !== user.password) {
+      throw new Error("Invalid password");
+    }
+
+    const token = JWT.sign({id: user.id}, JWT_SECRET);
+    return token;
+
+  }
+
 }
 
 export default UserService;
