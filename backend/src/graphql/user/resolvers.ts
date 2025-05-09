@@ -1,4 +1,3 @@
-import { User } from ".";
 import UserService, { UserInterface } from "../../services/user";
 
 const queries = {
@@ -12,9 +11,22 @@ const queries = {
    return token;
  },
 
- getCurrentLoggedInUser: (_: any, parameter: any, context: any) => {
-    console.log(context);
-    throw new Error("I dont know who you are");
+ getCurrentLoggedInUser: async (_: any, parameters: any, context: any) => {
+   
+    if(!context && !context.user) {
+      // const { id } = context.user;
+      // const user = await UserService.getUserById(id);
+      // return user;
+
+      throw new Error("Please login");
+    }
+    const user = await UserService.getUserById(context.user.id)
+    if(!user){
+      throw new Error("User not found");
+    }
+
+    return user;
+
  }
 
 };

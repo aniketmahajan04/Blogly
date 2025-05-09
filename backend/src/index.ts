@@ -21,12 +21,13 @@ async function init() {
           expressMiddleware(await createApolloGraphqlServer(), {
             context: async ({ req }) => {
               const token = req.headers["token"] as string | undefined;
+              
               try{
                 if(!token){
                   return { user: null };
                 }
                 const user = UserService.decodeJWTToken(token);
-                
+                 
                 return { user };
               } catch(error) {
                 console.log("Authentication error", error);

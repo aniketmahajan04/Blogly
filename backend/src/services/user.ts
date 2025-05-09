@@ -77,6 +77,20 @@ class UserService {
     return  JWT.verify(token, JWT_SECRET);
   }
 
+  public static checkContext(context: { id: string }) {
+    if(!context.id) {
+      throw new Error("Please login");
+    }
+  }
+
+  public static getUserById(id: string) {
+    return prismaClient.user.findUnique({
+      where: {
+        id
+      }
+    })
+  }
+
 }
 
 export default UserService;
