@@ -10,6 +10,7 @@ import { CLIENTID, CLIENTSECRET, PORT } from "./config";
 import { prismaClient } from "./lib/db";
 import { AuthProvider } from "@prisma/client";
 import createApolloGraphqlServer from "./graphql";
+import UserService from "./services/user";
 
 async function init() {
 
@@ -17,7 +18,21 @@ async function init() {
 
   app.use(express.json());
   app.use("/graphql",
-          (expressMiddleware(await createApolloGraphqlServer())));
+          expressMiddleware(await createApolloGraphqlServer(), {
+            context: async ({ req }) => {
+              const token = req.headers["token"] as string | undefined;
+              try{
+                if(!token){
+                  return { user: null };
+                }
+                const user = UserService.decodeJWTToken(token);
+                
+                return { user };
+              } catch(error) {
+                console.log("Authentication error", error);
+              }
+            }
+          }));
 
   app.use(
       session({

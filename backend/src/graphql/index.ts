@@ -6,6 +6,9 @@ async function createApolloGraphqlServer() {
   const gqlServer = new ApolloServer({
     //graphql need its own enum 
     typeDefs: `
+
+      ${User.typedefs}
+
       type Query {
         ${User.queries}
       }
