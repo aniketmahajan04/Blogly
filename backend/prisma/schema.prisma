@@ -22,7 +22,41 @@ model User {
     provider    AuthProvider
     salt        String?
     createdAt   DateTime       @default(now())
+    posts       Post[]
+    likes       Like[]
+    comments    Comments[]
 }
+
+model Post {
+    id          String         @id @default(uuid())
+    title       String        
+    body        String
+    image       String?
+    userId      String
+    user        User            @relation(fields: [userId], references: [id])
+    postedAt    DateTime        @default(now())
+    like        Like[]
+    comments    Comments[]
+}
+
+model Comments {
+    id          String          @id @default(uuid())
+    body        String  
+    postId      String
+    userId      String
+    post        Post            @relation(fields: [postId], references: [id])
+    user        User            @relation(fields: [userId], references: [id])
+    commentedAt DateTime        @default(now())
+}
+
+model Like { 
+    id          String          @id @default(uuid())
+    userId      String
+    postId      String
+    user        User            @relation(fields: [userId], references: [id])
+    post        Post            @relation(fields: [postId], references: [id])
+    likedAt     DateTime        @default(now())
+  }
 
 enum AuthProvider {
     EMAIL
