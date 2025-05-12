@@ -1,7 +1,11 @@
 import UserService, { 
   UserInterface,
 } from "../../services/user";
-import PostService, { PostInterface } from "../../services/post"; 
+import PostService, { 
+  PostInterface,
+  UpdatePostInterface
+} from "../../services/post"; 
+
 
 const queries = {
  getUserByToken: async (
@@ -47,9 +51,25 @@ const mutations = {
 
     const { id } = context.user;
 
-    const post = await PostService.createPost(payload, id);
+    await PostService.createPost(payload, id);
     return "Post successfully created!";
-  }
+  },
+
+  updatePost: async (_: any, payload: UpdatePostInterface, context: any) => {
+
+    if(!context && !context.user){
+      throw new Error("Unauthorized! please login");
+    }
+
+    const post = await PostService.getPostById(payload.id);
+    
+    if(!post) {
+      throw new Error("Post not found");
+    }
+
+    await PostService.updatePost(payload.id, payload);
+    return "Post successfully updated";
+  } 
 };
 
 export const resolvers = { queries, mutations };
