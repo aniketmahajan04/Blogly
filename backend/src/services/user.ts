@@ -10,6 +10,8 @@ export interface UserInterface {
   name: string;
 }
 
+
+
 export interface GetUserByToken {
   email: string;
   password: string;
@@ -90,6 +92,8 @@ class UserService {
       }
     })
   }
+
+
 
 }
 

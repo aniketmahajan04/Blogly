@@ -1,4 +1,7 @@
-import UserService, { UserInterface } from "../../services/user";
+import UserService, { 
+  UserInterface,
+} from "../../services/user";
+import PostService, { PostInterface } from "../../services/post"; 
 
 const queries = {
  getUserByToken: async (
@@ -35,6 +38,17 @@ const mutations = {
   createUser: async (_: any, payload: UserInterface) => {
     const res = await UserService.createUser(payload);
       return res.id;
+  },
+
+  createPost: async (_: any, payload: PostInterface, context: any) => {
+    if(!context && !context.user){
+      throw new Error("Unauthorized! please login");
+    }
+
+    const { id } = context.user;
+
+    const post = await PostService.createPost(payload, id);
+    return "Post successfully created!";
   }
 };
 
