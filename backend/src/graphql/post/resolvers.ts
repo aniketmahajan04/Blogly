@@ -41,6 +41,10 @@ const mutations = {
     if(!context && !context.user){
       throw new Error("Unauthorized! please login");
     }
+    const post = await PostService.getPostById(postId);
+    if(!post) {
+      throw new Error("Post not found!");
+    }
     await PostService.deletePost(postId); 
     return "Post successfully deleted";
   }
