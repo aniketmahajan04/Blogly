@@ -44,33 +44,6 @@ const mutations = {
     const res = await UserService.createUser(payload);
       return res.id;
   },
-
-  createPost: async (_: any, payload: PostInterface, context: any) => {
-    if(!context && !context.user){
-      throw new Error("Unauthorized! please login");
-    }
-
-    const { id } = context.user;
-
-    await PostService.createPost(payload, id);
-    return "Post successfully created!";
-  },
-
-  updatePost: async (_: any, payload: UpdatePostInterface, context: any) => {
-
-    if(!context && !context.user){
-      throw new Error("Unauthorized! please login");
-    }
-
-    const post = await PostService.getPostById(payload.id);
-    
-    if(!post) {
-      throw new Error("Post not found");
-    }
-
-    await PostService.updatePost(payload.id, payload);
-    return "Post successfully updated";
-  } 
 };
 
 export const resolvers = { queries, mutations };

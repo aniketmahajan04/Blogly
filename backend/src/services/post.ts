@@ -1,4 +1,3 @@
-import { threadId } from "worker_threads";
 import { prismaClient } from "../lib/db";
 
 export interface PostInterface {
@@ -60,6 +59,14 @@ class PostService {
             }
         })
 
+    }
+
+    public static deletePost(postId: string) {
+      return prismaClient.post.delete({
+        where: {
+          id: postId
+        }
+      })
     }
 }
 

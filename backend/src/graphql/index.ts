@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { User } from './user';
+import { Post } from './post';
 
 async function createApolloGraphqlServer() {
 
@@ -8,22 +9,26 @@ async function createApolloGraphqlServer() {
     typeDefs: `
 
       ${User.typedefs}
-
+      ${Post.typedefs}
       type Query {
         ${User.queries}
+        ${Post.queries}
       }
 
       type Mutation {
         ${User.mutations}
+        ${Post.mutations}
       }
     `,
     resolvers: {
       Query: {
-        ...User.resolvers.queries
+        ...User.resolvers.queries,
+        ...Post.resolvers.queries
       },
       
       Mutation: {
-        ...User.resolvers.mutations
+        ...User.resolvers.mutations,
+        ...Post.resolvers.mutations
       }
     }
   })

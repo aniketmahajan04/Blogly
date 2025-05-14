@@ -7,12 +7,4 @@ export const typedefs = `#graphql
     photo: String
   }
 
-  type Post {
-    id: ID!
-    title: String
-    body: String
-    image: String
-    # Add other fields if needed (e.g., createdAt, author, etc.)
-  }
-
 `;
