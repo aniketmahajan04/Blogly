@@ -68,6 +68,35 @@ class PostService {
         }
       })
     }
+
+    public static createComment(postId: string, userId: string, body: string) {
+      return prismaClient.comments.create({
+        data: {
+          body: body,
+          postId: postId,
+          userId: userId
+        }
+      })
+    }
+
+    public static editComment(commentId: string, body: string) {
+      return prismaClient.comments.update({
+        where:{
+          id: commentId
+        }, 
+        data: {
+          body: body
+        }
+      })
+    }
+
+    public static getCommentById(commentId: string) {
+      return prismaClient.comments.findUnique({
+        where: {
+          id: commentId
+        }
+      })
+    }
 }
 
 export default PostService;

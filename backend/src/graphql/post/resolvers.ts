@@ -1,4 +1,3 @@
-
 import PostService, { 
   PostInterface,
   UpdatePostInterface
@@ -47,6 +46,47 @@ const mutations = {
     }
     await PostService.deletePost(postId); 
     return "Post successfully deleted";
+  },
+
+  createComment: async (_: any, {
+    postId,
+    body
+  }: {
+    postId: string,
+    body: string
+  },
+    context: any
+    ) => {
+    if(!context || !context.user)
+      throw new Error("Unauthorized! please login");
+
+    const { id } = context.user;
+
+    await PostService.createComment(postId, id, body);
+    return "successfully createComment";
+  },
+
+  editComment: async (_: any, {
+    commentId,
+    body
+  }: {
+    commentId: string,
+    body: string
+  },
+  context: any) => {
+    if(!context || !context.user)
+      throw new Error("Unauthorized! please login");
+
+    const { id } = context.user;
+    const  comment = await PostService.getCommentById(commentId);
+    if(!comment)
+      throw new Error("Comment not found!");
+
+    if(comment.userId !== id)
+      throw new Error("Unauthorized! you are not the owner of this comment");
+
+    await PostService.editComment(commentId, body);
+    return "successfully editComment";
   }
 }
 
