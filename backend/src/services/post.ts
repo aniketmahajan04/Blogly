@@ -97,6 +97,14 @@ class PostService {
         }
       })
     }
+
+    public static deleteComment(commentId: string) {
+      return prismaClient.comments.delete({
+        where: {
+          id: commentId
+        }
+      })
+    }
 }
 
 export default PostService;

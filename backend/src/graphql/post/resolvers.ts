@@ -1,3 +1,4 @@
+import { log } from "node:console";
 import PostService, { 
   PostInterface,
   UpdatePostInterface
@@ -87,7 +88,29 @@ const mutations = {
 
     await PostService.editComment(commentId, body);
     return "successfully editComment";
-  }
+  },
+
+  deleteComment: async (_: any, {
+    commentId,
+  }: {
+    commentId: string
+  },
+    context: any) => {
+
+      if(!context || !context.user)
+        throw new Error("Unauthorized! please login");
+      const { id } = context.user;
+
+      const comment = await PostService.getCommentById(commentId);
+      if(!comment)
+        throw new Error("Comment not found!");
+      if(comment.userId !== id) {
+        throw new Error("Unauthorized! you are not the owner of this commentId");
+      }
+
+      await PostService.deleteComment(commentId);
+      return "successfully Comment deleted";
+    }
 }
 
 export const resolvers = { queries, mutations };

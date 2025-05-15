@@ -5,4 +5,5 @@ export const mutations = `#graphql
   deletePost(postId: String!): String
   createComment(postId: String!, body: String!): String
   editComment(commentId: String!, body: String!): String
+  deleteComment(commentId: String!): String
 `
