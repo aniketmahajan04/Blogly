@@ -56,7 +56,9 @@ model Like {
     user        User            @relation(fields: [userId], references: [id])
     post        Post            @relation(fields: [postId], references: [id])
     likedAt     DateTime        @default(now())
-  }
+
+    @@unique([userId, postId]) // Composite unique constraint
+}
 
 enum AuthProvider {
     EMAIL

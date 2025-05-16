@@ -6,4 +6,5 @@ export const mutations = `#graphql
   createComment(postId: String!, body: String!): String
   editComment(commentId: String!, body: String!): String
   deleteComment(commentId: String!): String
+  likeBlog(postId: String!): String
 `

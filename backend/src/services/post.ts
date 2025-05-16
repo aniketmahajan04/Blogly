@@ -105,6 +105,26 @@ class PostService {
         }
       })
     }
+
+    public static getLikeByPostIdAndUserId(postId: string, userId: string) {
+      return prismaClient.like.findUnique({
+        where: {
+          userId_postId: {
+            postId: postId,
+            userId: userId
+          }
+        }
+      })
+    }
+
+    public static createLike(postId: string, userId: string) {
+      return prismaClient.like.create({
+        data: {
+          postId: postId,
+          userId: userId
+        }
+      })
+    } 
 }
 
 export default PostService;

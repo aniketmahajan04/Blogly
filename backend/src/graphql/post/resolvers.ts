@@ -110,6 +110,29 @@ const mutations = {
 
       await PostService.deleteComment(commentId);
       return "successfully Comment deleted";
+    },
+
+    likeBlog: async (_: any, {
+      postId
+    }: {
+      postId: string
+    },
+     context: any
+    ) => {
+      if(!context || !context.user)
+        throw new Error("Unauthorized! please login");
+    
+      const { id } = context.user;
+      const post = await PostService.getPostById(postId);
+      
+      if(!post)
+        throw new Error("Post not found!");
+
+      const like = await PostService.getLikeByPostIdAndUserId(postId, id);
+      if(like)
+        throw new Error("You already liked this post!");
+      await PostService.createLike(postId, id);
+      return "successfully liked the post";
     }
 }
 
