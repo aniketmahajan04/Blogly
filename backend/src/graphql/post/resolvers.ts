@@ -3,6 +3,8 @@ import PostService, {
   PostInterface,
   UpdatePostInterface
 } from "../../services/post"; 
+import { unlink } from "node:fs/promises";
+import e from "express";
 
 const queries = {
 
@@ -133,6 +135,14 @@ const mutations = {
         throw new Error("You already liked this post!");
       await PostService.createLike(postId, id);
       return "successfully liked the post";
+    },
+
+    enhanceBlog: async (_: any, content: string, context: any) =>{
+      if(!context || !context.user)
+        throw new Error("Unauthorized! please login");
+
+      const enhacedContent = await PostService.enhanceBlog(content);
+      return enhacedContent;
     }
 }
 

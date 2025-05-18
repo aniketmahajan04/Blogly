@@ -1,3 +1,5 @@
+import { log } from "console";
+import { HUGGINGFACE_NEW_API_TOKEN } from "../config";
 import { prismaClient } from "../lib/db";
 
 export interface PostInterface {
@@ -125,6 +127,47 @@ class PostService {
         }
       })
     } 
+
+    public static async enhanceBlog(content: string) {
+      try{
+        if(!content)
+          throw new Error("Content is required");
+
+        console.log(content);
+        
+
+        if(!HUGGINGFACE_NEW_API_TOKEN)
+          throw new Error("Please provide huggingface api token");
+
+        const responce = await fetch('',{
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HUGGINGFACE_NEW_API_TOKEN}`,
+            'Content-type': 'application/json'
+          },
+
+          body: JSON.stringify({
+            inputs: `rewrite:\n ${content}`
+          })
+        })
+        console.log(responce);
+        
+        const data = await responce.json();
+        console.log(data);
+        
+        if(!data)
+          throw new Error("No data found");
+
+        // The Hugging Face summarizer returns an array with 'summary_text'
+        if (Array.isArray(data) && data[0]?.summary_text) {
+          return data[0].generated;
+        }
+
+        return JSON.stringify(data);
+      }catch(error) {
+        console.log("Error in enhancingBlog", error);
+      }
+    }
 }
 
 export default PostService;

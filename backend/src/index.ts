@@ -11,12 +11,14 @@ import { prismaClient } from "./lib/db";
 import { AuthProvider } from "@prisma/client";
 import createApolloGraphqlServer from "./graphql";
 import UserService from "./services/user";
+import cors from 'cors';
 
 async function init() {
 
   const app = express();
 
   app.use(express.json());
+  app.use(cors());
   app.use("/graphql",
           expressMiddleware(await createApolloGraphqlServer(), {
             context: async ({ req }) => {
