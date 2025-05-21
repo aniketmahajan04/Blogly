@@ -1,4 +1,3 @@
-import { log } from "console";
 import { HUGGINGFACE_NEW_API_TOKEN } from "../config";
 import { prismaClient } from "../lib/db";
 
@@ -85,7 +84,7 @@ class PostService {
       return prismaClient.comments.update({
         where:{
           id: commentId
-        }, 
+        },
         data: {
           body: body
         }
@@ -126,7 +125,7 @@ class PostService {
           userId: userId
         }
       })
-    } 
+    }
 
     public static async enhanceBlog(content: string) {
       try{
@@ -134,7 +133,7 @@ class PostService {
           throw new Error("Content is required");
 
         console.log(content);
-        
+
 
         if(!HUGGINGFACE_NEW_API_TOKEN)
           throw new Error("Please provide huggingface api token");
@@ -151,10 +150,10 @@ class PostService {
           })
         })
         console.log(responce);
-        
+
         const data = await responce.json();
         console.log(data);
-        
+
         if(!data)
           throw new Error("No data found");
 
@@ -168,6 +167,7 @@ class PostService {
         console.log("Error in enhancingBlog", error);
       }
     }
+
 }
 
 export default PostService;

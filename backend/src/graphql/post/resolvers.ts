@@ -1,10 +1,9 @@
 import { log } from "node:console";
-import PostService, { 
+import PostService, {
   PostInterface,
   UpdatePostInterface
-} from "../../services/post"; 
+} from "../../services/post";
 import { unlink } from "node:fs/promises";
-import e from "express";
 
 const queries = {
 
@@ -30,7 +29,7 @@ const mutations = {
     }
 
     const post = await PostService.getPostById(payload.id);
-    
+
     if(!post) {
       throw new Error("Post not found");
     }
@@ -47,7 +46,7 @@ const mutations = {
     if(!post) {
       throw new Error("Post not found!");
     }
-    await PostService.deletePost(postId); 
+    await PostService.deletePost(postId);
     return "Post successfully deleted";
   },
 
@@ -123,10 +122,10 @@ const mutations = {
     ) => {
       if(!context || !context.user)
         throw new Error("Unauthorized! please login");
-    
+
       const { id } = context.user;
       const post = await PostService.getPostById(postId);
-      
+
       if(!post)
         throw new Error("Post not found!");
 
@@ -143,7 +142,8 @@ const mutations = {
 
       const enhacedContent = await PostService.enhanceBlog(content);
       return enhacedContent;
-    }
+    },
+
 }
 
 export const resolvers = { queries, mutations };
