@@ -26,7 +26,7 @@ export const Login = () => {
   const token = localStorage.getItem("token");
 
     if (token) {
-      navigate("/posts");
+      navigate("/");
     } else {
       alert("Login failed. Please try again.");
     }

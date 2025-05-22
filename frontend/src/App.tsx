@@ -5,7 +5,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoutes } from "./components/ProtectedRoutes";
 import PostDetailPage from "./pages/PostDetailPage";
 import { Posts } from "./pages/Posts";
-import { config } from "dotenv";
 
 function App() {
   return (
@@ -31,7 +30,12 @@ function App() {
               </ProtectedRoutes>
             }
           />
-          <Route path="/posts" element={<Posts />} />
+          <Route path="/" element={
+            <ProtectedRoutes>
+              <Posts />
+            </ProtectedRoutes>
+          }
+          />
         </Routes>
       </BrowserRouter>
     </>

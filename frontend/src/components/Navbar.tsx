@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
-import { User } from "lucide-react";
+import { Search, SquarePen, User } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Input } from "./Input";
+import { Button } from "./Button";
 
-const navItems = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/About" },
-  { name: "SavePosts", path: "/saveposts" },
-];
+// const navItems = [
+//   { name: "Home", path: "/" },
+//   { name: "About", path: "/About" },
+// ];
 
 const isActive = (path: string) => {
   return location.pathname === path;
@@ -31,20 +32,26 @@ export const Navbar = () => {
         {/* </Link> */}
         <nav className="flex items-center space-x-8">
           <ul className="flex space-x-8">
-            {navItems.map((item) => (
-              <li key={item.name}>
-                <Link
-                  to={item.path}
-                  className={`font-medium transition-colors duration-200 ${
-                    isActive(item.path)
-                      ? "text-red-400 font-semibold"
-                      : "text-custom-ash-900"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+            {/* {navItems.map((item) => ( */}
+            <li>
+              <div className="flex justify-center items-center bg-gray-100 rounded-xl">
+                <Button
+                  variant="NavButton"
+                  icon={<Search className="mr-2" />}
+                ></Button>
+                <Input type="text" placeholder="Search..." />
+              </div>
+            </li>
+            <li>
+              <Link
+                to={"/write"}
+                className={
+                  "font-medium transition-colors duration-200 text-custom-ash-900"
+                }
+              >
+                {<SquarePen />}
+              </Link>
+            </li>
           </ul>
 
           <div className="relative group">
