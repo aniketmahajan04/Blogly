@@ -1,17 +1,35 @@
 import { create } from 'zustand';
 
-const useAuthStore = create((set)) => ({
+interface User{
+    id: string,
+    name: string,
+    email: string,
+    image: string
+}
+
+interface AuthStore {
+  user: User | null; // Replace `any` with your actual `User` type if you have it
+  token: string | null;
+  isLoggedIn: boolean;
+  loading: boolean;
+  error: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  profile: () => void;
+}
+
+export const useAuthStore = create<AuthStore>((set) => ({
     user: null,
     token: null,
     isLoggedIn: false,
-    lodading: false,
+    loading: false,
     error: null,
 
-    login: async (email, password) => {
+    login: async (email: string, password: string) => {
         set({loading: true, error: null});
         try{
-            const response = await fetch('https://localhost:3000/graphql', {
-                methode: 'POST',
+            const response = await fetch('http://localhost:3000/graphql', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -36,8 +54,50 @@ const useAuthStore = create((set)) => ({
 
             set({token, isLoggedIn: true, loading: false});
             localStorage.setItem('token', token);
-        }catch(err){
-            set({error: erro.massage. loading: false});
+        }catch(error){
+            set({error: (error as Error).message, loading: false});
+        }
+    },
+    logout: () => {
+        set({user:null, token:null, isLoggedIn: false});
+        localStorage.removeItem('token');
+    },
+
+    profile: async () => {
+        const token = localStorage.getItem('token');
+
+        if(!token){
+            throw new Error('Token not Found!')
+        }
+        try{
+            const response = await fetch("http://localhost:3000/graphql", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token
+                },
+
+                body: JSON.stringify({
+                    query: `
+                        query GetCurrentLoggedInUser{
+                            getCurrentLoggedInUser{
+                                id
+                                name
+                                email
+                                photo
+                            }
+                        }
+                    `
+                })
+            })
+
+            const json = await response.json();
+            const currentUser = json.data.getCurrentLoggedInUser;
+            set({user: currentUser})
+
+        } catch(error){
+            set({error: (error as Error).message})
         }
     }
-})
+
+}))

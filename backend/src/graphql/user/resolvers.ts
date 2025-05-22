@@ -21,7 +21,7 @@ const queries = {
 
  getCurrentLoggedInUser: async (_: any, parameters: any, context: any) => {
    
-    if(!context && !context.user) {
+    if(!context || !context.user) {
       // const { id } = context.user;
       // const user = await UserService.getUserById(id);
       // return user;

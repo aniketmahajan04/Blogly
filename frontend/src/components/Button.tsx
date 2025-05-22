@@ -2,9 +2,10 @@ import { ReactElement } from "react";
 
 interface ButtonProps {
   text?: string;
-  onClick: () => void;
+  onClick?: () => void;
   variant: "logout" | "signup" | "login" | "profile" | "trash";
   icon?: ReactElement;
+  type?: "submit"
 }
 
 const buttonVariantClasses = {

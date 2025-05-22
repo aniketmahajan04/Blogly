@@ -1,20 +1,30 @@
-import { Navbar } from "./components/Navbar";
 import { SignUp } from "./pages/Signup";
-import { GoogleIcon } from "./icons/GoogleIcon";
-import { GithubIcon } from "./icons/Github";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
-import BlogCard from "./components/BlogCard";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ProtectedRoutes } from "./components/ProtectedRoutes";
+import PostDetailPage from "./pages/PostDetailPage";
+import { Posts } from "./pages/Posts";
 
 function App() {
 
   return (
     <>
-      {/* <SignUp /> */}
-      {/* <Login /> */}
-      <Navbar />
-      {/* <Profile />  */}
-      <BlogCard post={'feature'},/>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/register' element={<SignUp />} />
+          <Route path='/login' element={<Login />} />
+          {/* <Route path='/' element={<Home />} /> */}
+            <Route path='/profile' element={
+              <ProtectedRoutes>
+                <Profile />
+              </ProtectedRoutes>
+            }
+            />
+            <Route path="/post" element={<PostDetailPage />}/>
+            <Route path="/posts" element={<Posts />}/>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }

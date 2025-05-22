@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Heart, Edit, Trash2, Calendar, User, Tag } from 'lucide-react';
-import { useBlog } from '../context/BlogContext';
-import { useAuth } from '../context/AuthContext';
+// import { useBlog } from '../context/BlogContext';
+// import { useAuth } from '../context/AuthContext';
 import CommentSection from '../components/CommentSection';
 import { formatDate } from '../utils/formatDate';
 
 const PostDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { getPostById, likePost, unlikePost, deletePost, loading } = useBlog();
-  const { currentUser, isAuthenticated } = useAuth();
+  // const { currentUser, isAuthenticated } = useAuth();
   const [post, setPost] = useState(id ? getPostById(id) : undefined);
   const navigate = useNavigate();
   

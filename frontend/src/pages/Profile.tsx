@@ -1,7 +1,42 @@
 import { BookMarked, Eye, LogOut, PenSquare, Trash2 } from "lucide-react"
 import { Button } from "../components/Button"
+import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export const Profile = () => {
+  const { user, profile, isLoggedIn, loading, error, logout } = useAuthStore();
+  const navigate = useNavigate();
+  const [localLoading, setLocalLoading] = useState(true);
+
+  useEffect( ()=> {
+    if(!isLoggedIn){
+      navigate("/login");
+      return;
+    }
+
+    const fetchUser = async () => {
+      try{
+        await profile();
+      }catch(error){
+        console.error("Error fetching user")
+      } finally{
+        setLocalLoading(false)
+      }
+    }
+
+    fetchUser();
+  }, [isLoggedIn, profile, navigate])
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  }
+
+   if (localLoading || loading) return <div>Loading...</div>;
+   if (error) return <div>Error: {error}</div>;
+   if (!user) return <div>No user data found.</div>;
+
 
   return (
     <div>
@@ -14,16 +49,16 @@ export const Profile = () => {
           <div className="flex items-center p-2 w-[90%] mt-5 rounded-lg">
             <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center ml-4">
               <img 
-                src="C:\Users\gaura\Videos\Screenshots" 
+                src={user.image ?? "https://unsplash.com/photos/frog-staring-intensely-with-detailed-eyes-CbAPNRuVyUk"} 
                 alt="Profile"
                 className="h-full w-full rounded-full object-cover"
                 />
             </div>
             <div className="ml-6 flex flex-col justify-center">
               <h3 className="font-bold text-xl text-custom-ash-900">
-                John Doe
+               {user.name}
               </h3>
-              <span className="text-sm text-gray-800">john@doegmail.com</span>
+              <span className="text-sm text-gray-800">{user.email}</span>
             </div>
             <div className="ml-12 text-center">
               <h4 className="font-semibold">
@@ -83,7 +118,7 @@ export const Profile = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white devide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200">
               <tr className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap text-center">
                 <div>
@@ -157,7 +192,7 @@ export const Profile = () => {
 
         <div className="mt-auto mr-auto  ml-12 mb-3 bottom-4 left-4">
           <Button
-            onClick={() => alert("clicked")}
+            onClick={handleLogout}
             variant="logout"
             icon={<LogOut size={20} className="hover:text-red-400"/>}
           >

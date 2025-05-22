@@ -1,11 +1,25 @@
-import { log } from "node:console";
+
 import PostService, {
   PostInterface,
   UpdatePostInterface
 } from "../../services/post";
-import { unlink } from "node:fs/promises";
 
 const queries = {
+
+  getAllPosts: async (_: any, parameter: any, context: any) => {
+    if(!context && !context.user){
+      throw new Error("Unauthorized! please login");
+    }
+    try{
+      const posts = await PostService.getAllPosts();
+      if(posts.length === 0){
+        throw new Error("No blogs found");
+      }
+      return posts;
+    } catch(error){
+      console.error("Error fetching posts");
+    }
+  }
 
 }
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { User, Clock, Trash2, Reply } from 'lucide-react';
 import { Comment } from '../types';
-import { useAuth } from '../context/AuthContext';
-import { useBlog } from '../context/BlogContext';
+// import { useAuth } from '../context/AuthContext';
+// import { useBlog } from '../context/BlogContext';
 import { formatDate } from '../utils/formatDate';
 
 interface CommentSectionProps {

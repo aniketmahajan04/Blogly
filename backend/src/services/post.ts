@@ -168,6 +168,10 @@ class PostService {
       }
     }
 
+    public static getAllPosts() {
+      return prismaClient.post.findMany();
+    }
+
 }
 
 export default PostService;
