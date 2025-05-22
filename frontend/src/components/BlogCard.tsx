@@ -1,94 +1,80 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, MessageCircle, Clock } from 'lucide-react';
-import { Post } from '../types/index';
+import { Heart, MessageCircle, Clock, Bookmark } from 'lucide-react';
 import { formatDate } from '../utils/formatDate';
+import { Blogs } from '../store/useBlogStore';
+import { Button } from './Button';
 
 interface BlogCardProps {
-  post: Post;
-  variant?: 'default' | 'featured' | 'compact';
+  blog: Blogs[];
+  // variant?: 'default' | 'featured' | 'compact';
 }
-
-const BlogCard: React.FC<BlogCardProps> = ({ post, variant = 'default' }) => {
-  const isFeatured = variant === 'featured';
-  const isCompact = variant === 'compact';
+// , variant = 'default'
+const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
+  // const isFeatured = variant === 'featured';
+  // const isCompact = variant === 'compact';
 
   return (
-    <article 
-      className={`group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 ${
-        isFeatured ? 'lg:flex' : 'h-full flex flex-col'
-      }`}
-    >
-      {/* Image */}
-      <Link 
-        to={`/post/${post.id}`}
-        className={`block overflow-hidden ${
-          isFeatured ? 'lg:w-5/12' : 'w-full'
-        } ${isCompact ? 'h-40' : 'h-52'}`}
-      >
-        <img
-          src={post.coverImage || 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
-          alt={post.title}
-          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
-        />
-      </Link>
+    <div className="container mx-auto py-10 px-4 flex flex-col items-center gap-6">
+      {blog.map((post) => (
+        <div className="w-4xl h-50 flex justify-center items-center">
+          <div className="w-3xl h-50 flex justify-center items-center border-b border-[rgba(128,128,128,0.2)]">
+            <div
+              key={post.id}
+              className=" flex w-[688px] max-w-3xl h-40 overflow-hidden bg-white"
+            >
+              {/* Image section */}
+              {post.image ? (
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-48 object-cover"
+                />
+              ) : (
+                <div className="w-48 flex items-center justify-center text-gray-500"></div>
+              )}
 
-      {/* Content */}
-      <div className={`${isFeatured ? 'lg:w-7/12' : 'w-full'} p-6 flex flex-col flex-grow`}>
-        {/* Category and Date */}
-        <div className="flex items-center justify-between mb-3 text-sm">
-          <Link 
-            to={`/category/${post.category.toLowerCase()}`} 
-            className="px-3 py-1 bg-teal-50 text-teal-700 font-medium rounded-full hover:bg-teal-100 transition-colors"
-          >
-            {post.category}
-          </Link>
-          <div className="flex items-center text-gray-500">
-            <Clock size={14} className="mr-1" />
-            <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
-          </div>
-        </div>
-        
-        {/* Title */}
-        <h2 className={`font-bold text-gray-900 mb-2 ${isFeatured ? 'text-2xl' : 'text-xl'}`}>
-          <Link to={`/post/${post.id}`} className="hover:text-teal-600 transition-colors">
-            {post.title}
-          </Link>
-        </h2>
-        
-        {/* Excerpt - Hide in compact mode */}
-        {!isCompact && (
-          <p className="text-gray-600 mb-4 line-clamp-2">{post.excerpt}</p>
-        )}
-        
-        {/* Footer with author, likes and comments */}
-        <div className="mt-auto pt-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <img
-              src={post.author.profileImage || 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
-              alt={post.author.name}
-              className="w-8 h-8 rounded-full mr-2 object-cover"
-            />
-            <span className="text-sm font-medium text-gray-700">{post.author.name}</span>
-          </div>
-          
-          <div className="flex items-center space-x-3 text-gray-600">
-            <div className="flex items-center">
-              <Heart 
-                size={16} 
-                className={`mr-1 ${post.isLiked ? 'fill-red-500 text-red-500' : ''}`} 
-              />
-              <span className="text-sm">{post.likes}</span>
-            </div>
-            <div className="flex items-center">
-              <MessageCircle size={16} className="mr-1" />
-              <span className="text-sm">{post.comments.length}</span>
+              {/* Content section */}
+              <div className="flex flex-col justify-between p-4 w-full">
+                <div className="h-24">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {post.title}
+                  </h2>
+                  <p className="text-gray-700 text-sm mt-1 line-clamp-3">
+                    {post.body}
+                  </p>
+                  <p className="text-gray-400 text-xs mt-2 align-text-bottom">
+                    {/* Posted on {new Date(post.postedAt).toLocaleDateString()} */}
+                    {formatDate(post.postedAt)}
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-between items-center gap-3 mt-4">
+                  <div className="flex gap-6 ml-2">
+                    <Button
+                      icon={<Heart className="w-5 h-5" />}
+                      variant="ghost"
+                    />
+                    <Button
+                      icon={<MessageCircle className="w-5 h-5" />}
+                      variant="ghost"
+                    />
+                  </div>
+                  <div className="flex mr-2">
+                    <Button
+                      icon={<Bookmark className="w-5 h-5" />}
+                      variant="ghost"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </article>
+      ))}
+    </div>
   );
 };
 

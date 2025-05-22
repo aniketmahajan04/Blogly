@@ -1,3 +1,4 @@
+import { preprocessCSS } from 'vite';
 import { create } from 'zustand';
 
 interface User{
@@ -28,7 +29,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     login: async (email: string, password: string) => {
         set({loading: true, error: null});
         try{
-            const response = await fetch('http://localhost:3000/graphql', {
+            const response = await fetch(`${import.meta.env.VITE_GRAPHQL_URL}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,7 +71,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             throw new Error('Token not Found!')
         }
         try{
-            const response = await fetch("http://localhost:3000/graphql", {
+            const response = await fetch(`${import.meta.env.VITE_GRAPHQL_URL}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

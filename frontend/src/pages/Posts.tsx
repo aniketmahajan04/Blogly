@@ -1,25 +1,37 @@
-
+import { useEffect } from "react";
+import useBlogeStore from "../store/useBlogStore";
+import BlogCard from "../components/BlogCard";
+import { SuggestionBlock } from "../components/SuggestionBlock";
+import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
+import { Navbar } from "../components/Navbar";
 
 export const Posts = () => {
-    return(
-        <div className="container bg-red-200 h-screen w-full flex flex-col justify-center items-center">
-            <div >
-                {Posts.map((post) => {
+  const { Blog, getAllPosts, loading, error } = useBlogeStore();
+  const { isLoggedIn } = useAuthStore();
+  const navigate = useNavigate();
 
-                    return (
-                        <div key={post.id} className="bg-white shadow-md rouded-lg p-4 m-2 flex justify-center items-center">
-                            <div className="bg-yellow-400">{post.image}</div>
-                            <div className="bg-yellow-400">
-                                <h2 className="text-xl font-bold">{post.title}</h2>
-                                <p className="text-gray-700">{post.content}</p>
-                            </div>
-                        </div>
-                    )
-                })
-                }
-            </div>
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+    getAllPosts();
+  }, []);
+
+  if (loading) return <div className="text-center mt-4">Loading...</div>;
+  if (error)
+    return <div className="text-red-500 text-center mt-4">Error: {error}</div>;
+
+  return (
+    <>
+      <Navbar />
+      <div className="flex justify-center">
+        <BlogCard blog={Blog} />
+        <div className="w-sm border-l h-screen border-[rgba(128,128,128,0.2)]">
+          <SuggestionBlock />
         </div>
-    )
-}
-
-
+      </div>
+    </>
+  );
+};

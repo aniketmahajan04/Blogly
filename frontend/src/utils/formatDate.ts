@@ -1,5 +1,7 @@
 export const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
+  if(!dateString) return "Unknown date"
+  const isoString = dateString.replace(' ', 'T');
+  const date = new Date(isoString);
   
   // Check if the date is valid
   if (isNaN(date.getTime())) {
