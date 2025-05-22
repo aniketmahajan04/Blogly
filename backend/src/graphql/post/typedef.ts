@@ -1,4 +1,3 @@
-
 export const typedefs = `#graphql
  
   type Post {
@@ -8,9 +7,6 @@ export const typedefs = `#graphql
     image: String
     userId: String!
     postedAt: String!
-    #like: [Like!]!
-    #comments: [Comments]!
-
   }
 
 `

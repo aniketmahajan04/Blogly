@@ -1,4 +1,3 @@
- 
-export const queries =`#graphql
-    getAllPosts(): Post[]
+export const queries = `#graphql
+    getAllPosts: [Post!]!
 `

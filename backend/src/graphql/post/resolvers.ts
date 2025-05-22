@@ -26,7 +26,7 @@ const queries = {
 const mutations = {
 
   createPost: async (_: any, payload: PostInterface, context: any) => {
-    if(!context && !context.user){
+    if(!context || !context.user){
       throw new Error("Unauthorized! please login");
     }
 
