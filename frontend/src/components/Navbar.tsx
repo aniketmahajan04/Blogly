@@ -16,7 +16,7 @@ const isActive = (path: string) => {
 
 export const Navbar = () => {
   // const [isDropdown, setIsDropdown] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // function handleProfileClick() {
   //   navigate("/Profile")
@@ -26,7 +26,6 @@ export const Navbar = () => {
     <header className="border-b border-[rgba(128,128,128,0.2)] z-50 right-0 left-0 top-0 relative">
       {/* Logo section */}
       <div className="container flex justify-between items-center px-4 py-2 mx-auto">
-        {" "}
         {/* <Link to={"/"}>  className="flex items-center space-x-2" */}
         <span className="text-2xl font-Bold text-custom-ash-900">BlogAI</span>
         {/* </Link> */}
@@ -54,16 +53,15 @@ export const Navbar = () => {
             </li>
           </ul>
 
-          <div className="relative group">
-            <button
-              className="flex items-center space-x-2 focus:outline-none"
-              onClick={() => alert("Click")}
+          <div className="relative group mr-15">
+            <Button
+              // className="flex items-center space-x-2 focus:outline-none"
+              onClick={() => navigate("/profile")}
+              variant="NavButton"
+              icon={<User />}
             >
               {/* add logic id user had profile */}
-              <div className="rounded-full w-10 h-10 flex items-center justify-center">
-                <User />
-              </div>
-            </button>
+            </Button>
           </div>
         </nav>
       </div>

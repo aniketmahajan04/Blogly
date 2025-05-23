@@ -3,14 +3,20 @@ import { prismaClient } from "../lib/db";
 
 export interface PostInterface {
   title: string;
-  body: string;
+  excerpt: string;
+  category: string;
+  tag: string[];
+  content: string;
   image?: string;
 }
 
 export interface UpdatePostInterface {
     id: string;
     title?: string;
-    body?: string;
+    excerpt?: string;
+    category?: string;
+    tag?: string[];
+    content?: string;
     image?: string
 }
 
@@ -25,12 +31,15 @@ class PostService {
     }
 
     public static createPost(post: PostInterface, userId: string) {
-        const { title, body, image } = post;
+        const { title, excerpt, category, tag,content, image } = post;
 
         return prismaClient.post.create({
             data: {
                 title,
-                body,
+                excerpt,
+                category
+                tag,
+                content,
                 image,
                 userId
             }
@@ -38,11 +47,14 @@ class PostService {
     }
 
     public static updatePost(postId: string, post: UpdatePostInterface) {
-        const { title, body, image } = post;
+        const { title, excerpt, tag, content, image } = post;
 
         const updateData: any = {};
         if (title !== undefined) updateData.title = title;
-        if (body !== undefined) updateData.body = body;
+        if (excerpt !== undefined) updateData.excerpt = excerpt;
+        if (category !== undefined) updateData.category = category;
+        if (tag !== undefined) updateData.tag = tag;
+        if (content !== undefined) updateData.content = content;
         if (image !== undefined) updateData.image = image;
 
         if(Object.keys(updateData).length === 0){
@@ -55,7 +67,10 @@ class PostService {
             },
             data: {
                 title,
-                body,
+                excerpt,
+                category
+                tag,
+                content,
                 image
             }
         })

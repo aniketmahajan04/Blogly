@@ -1,5 +1,5 @@
-import { preprocessCSS } from 'vite';
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface User{
     id: string,
@@ -19,7 +19,9 @@ interface AuthStore {
   profile: () => void;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>()(
+
+    persist((set) => ({
     user: null,
     token: null,
     isLoggedIn: false,
@@ -59,6 +61,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             set({error: (error as Error).message, loading: false});
         }
     },
+
     logout: () => {
         set({user:null, token:null, isLoggedIn: false});
         localStorage.removeItem('token');
@@ -102,3 +105,4 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
 
 }))
+)

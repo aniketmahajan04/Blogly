@@ -1,16 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useBlog } from '../context/BlogContext';
-import { useAuth } from '../context/AuthContext';
 import { Image, X, Save, ArrowLeft } from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore';
+import  useBlogStore  from '../store/useBlogStore';
 
 const PostEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { getPostById, createPost, updatePost } = useBlog();
-  const { currentUser, isAuthenticated } = useAuth();
+  const { user, isLoggedIn, loading, error } = useAuthStore();
+  const { Blog, createPost } = useBlogStore();
+
   const navigate = useNavigate();
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -19,28 +19,28 @@ const PostEditor: React.FC = () => {
   const [category, setCategory] = useState('Technology');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
-  
+
   const isEditMode = !!id;
-  
+
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoggedIn) {
       navigate('/login', { state: { from: isEditMode ? `/edit/${id}` : '/create' } });
       return;
     }
-    
+
     if (isEditMode && id) {
       const post = getPostById(id);
       if (!post) {
         navigate('/not-found');
         return;
       }
-      
+
       // Check if current user is the author
-      if (currentUser?.id !== post.author.id) {
+      if (user?.id !== Blog.userId) {
         navigate('/');
         return;
       }
-      
+
       setTitle(post.title);
       setContent(post.content);
       setExcerpt(post.excerpt);
@@ -48,8 +48,8 @@ const PostEditor: React.FC = () => {
       setCategory(post.category);
       setTags(post.tags);
     }
-  }, [id, isEditMode, isAuthenticated, currentUser, getPostById, navigate]);
-  
+  }, [id, isEditMode, isLoggedIn, user, navigate]);
+
   const handleAddTag = () => {
     const trimmedTag = tagInput.trim();
     if (trimmedTag && !tags.includes(trimmedTag)) {
@@ -57,48 +57,50 @@ const PostEditor: React.FC = () => {
       setTagInput('');
     }
   };
-  
+
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!isAuthenticated || !currentUser) {
-      navigate('/login');
+
+    if (!isLoggedIn || !user) {
+      navigate('/login')
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const postData = {
-        title,
-        content,
-        excerpt,
-        coverImage,
-        category,
-        tags,
-        author: currentUser
-      };
-      
-      if (isEditMode && id) {
-        await updatePost(id, postData);
-        navigate(`/post/${id}`);
-      } else {
-        const newPost = await createPost(postData);
-        navigate(`/post/${newPost.id}`);
-      }
+      // const postData = {
+      //   title,
+      //   content,
+      //   excerpt,
+      //   coverImage,
+      //   category,
+      //   tags,
+      //   author: currentUser
+      // };
+      //
+        await createPost({title, content, excerpt, image, category, tag});
+
+      // if (isEditMode && id) {
+      //   await updatePost(id, postData);
+      //   navigate(`/post/${id}`);
+      // } else {
+      //   const newPost = await createPost(postData);
+      //   navigate(`/post/${newPost.id}`);
+      // }
     } catch (error) {
       console.error('Error saving post:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   const categories = ['Technology', 'Design', 'Programming', 'Lifestyle', 'Business', 'Health', 'Science', 'Travel'];
-  
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
@@ -116,17 +118,18 @@ const PostEditor: React.FC = () => {
                 {isEditMode ? 'Edit Post' : 'Create New Post'}
               </h1>
             </div>
-            
+
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || !title || !content}
+              type="submit"
               className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Save size={18} />
               <span>{isSubmitting ? 'Saving...' : 'Publish'}</span>
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="p-6">
             {/* Cover Image URL */}
             <div className="mb-6">
@@ -143,9 +146,9 @@ const PostEditor: React.FC = () => {
               />
               {coverImage && (
                 <div className="mt-2 relative h-40 rounded-md overflow-hidden">
-                  <img 
-                    src={coverImage} 
-                    alt="Cover preview" 
+                  <img
+                    src={coverImage}
+                    alt="Cover preview"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.currentTarget.src = 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
@@ -154,7 +157,7 @@ const PostEditor: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Title */}
             <div className="mb-6">
               <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
@@ -170,7 +173,7 @@ const PostEditor: React.FC = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent text-xl"
               />
             </div>
-            
+
             {/* Excerpt */}
             <div className="mb-6">
               <label htmlFor="excerpt" className="block text-gray-700 font-medium mb-2">
@@ -186,7 +189,7 @@ const PostEditor: React.FC = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
             </div>
-            
+
             {/* Category */}
             <div className="mb-6">
               <label htmlFor="category" className="block text-gray-700 font-medium mb-2">
@@ -205,7 +208,7 @@ const PostEditor: React.FC = () => {
                 ))}
               </select>
             </div>
-            
+
             {/* Tags */}
             <div className="mb-6">
               <label className="block text-gray-700 font-medium mb-2">Tags</label>
@@ -231,7 +234,7 @@ const PostEditor: React.FC = () => {
                   Add
                 </button>
               </div>
-              
+
               {tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {tags.map((tag, index) => (
@@ -252,7 +255,7 @@ const PostEditor: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Content */}
             <div className="mb-6">
               <label htmlFor="content" className="block text-gray-700 font-medium mb-2">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, MessageCircle, Clock, Bookmark } from 'lucide-react';
@@ -42,7 +41,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                     {post.title}
                   </h2>
                   <p className="text-gray-700 text-sm mt-1 line-clamp-3">
-                    {post.body}
+                    {post.content}
                   </p>
                   <p className="text-gray-400 text-xs mt-2 align-text-bottom">
                     {/* Posted on {new Date(post.postedAt).toLocaleDateString()} */}

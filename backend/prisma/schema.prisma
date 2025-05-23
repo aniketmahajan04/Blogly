@@ -29,8 +29,11 @@ model User {
 
 model Post {
     id          String         @id @default(uuid())
-    title       String        
-    body        String
+    title       String
+    excerpt     String?
+    content     String?
+    category    String
+    tag         String[]
     image       String?
     userId      String
     user        User            @relation(fields: [userId], references: [id])
@@ -41,7 +44,7 @@ model Post {
 
 model Comments {
     id          String          @id @default(uuid())
-    body        String  
+    body        String
     postId      String
     userId      String
     post        Post            @relation(fields: [postId], references: [id])
@@ -49,7 +52,7 @@ model Comments {
     commentedAt DateTime        @default(now())
 }
 
-model Like { 
+model Like {
     id          String          @id @default(uuid())
     userId      String
     postId      String

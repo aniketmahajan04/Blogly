@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoutes } from "./components/ProtectedRoutes";
 import PostDetailPage from "./pages/PostDetailPage";
 import { Posts } from "./pages/Posts";
+import PostEditor from "./pages/PostEditor";
 
 function App() {
   return (
@@ -36,6 +37,12 @@ function App() {
             </ProtectedRoutes>
           }
           />
+
+          <Route
+            path="/write"
+            element={ <PostEditor /> }
+          >
+          </Route>
         </Routes>
       </BrowserRouter>
     </>
