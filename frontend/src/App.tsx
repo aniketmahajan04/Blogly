@@ -6,8 +6,19 @@ import { ProtectedRoutes } from "./components/ProtectedRoutes";
 import PostDetailPage from "./pages/PostDetailPage";
 import { Posts } from "./pages/Posts";
 import PostEditor from "./pages/PostEditor";
+import { useEffect } from "react";
+import { useAuthStore } from "./store/useAuthStore";
 
 function App() {
+  const token = useAuthStore((state) => state.token);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const profile = useAuthStore((state) => state.profile);
+
+  useEffect(() => {
+    if (token && !isLoggedIn) {
+      profile(); // restore session from token
+    }
+  }, [token, isLoggedIn, profile]);
   return (
     <>
       <BrowserRouter>
@@ -31,18 +42,31 @@ function App() {
               </ProtectedRoutes>
             }
           />
-          <Route path="/" element={
-            <ProtectedRoutes>
-              <Posts />
-            </ProtectedRoutes>
-          }
+          <Route
+            path="/"
+            element={
+              <ProtectedRoutes>
+                <Posts />
+              </ProtectedRoutes>
+            }
           />
 
           <Route
             path="/write"
-            element={ <PostEditor /> }
-          >
-          </Route>
+            element={
+              <ProtectedRoutes>
+                <PostEditor />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/write/:id"
+            element={
+              <ProtectedRoutes>
+                <PostEditor />
+              </ProtectedRoutes>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>

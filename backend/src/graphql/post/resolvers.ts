@@ -1,4 +1,3 @@
-
 import PostService, {
   PostInterface,
   UpdatePostInterface
@@ -149,7 +148,7 @@ const mutations = {
       return "successfully liked the post";
     },
 
-    enhanceBlog: async (_: any, content: string, context: any) =>{
+    enhanceBlog: async (_: any, { content }: { content: string }, context: any) =>{
       if(!context || !context.user)
         throw new Error("Unauthorized! please login");
 

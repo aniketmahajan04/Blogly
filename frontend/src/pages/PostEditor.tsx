@@ -7,7 +7,7 @@ import  useBlogStore  from '../store/useBlogStore';
 const PostEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user, isLoggedIn, loading, error } = useAuthStore();
-  const { Blog, createPost } = useBlogStore();
+  const { currentBlog, createPost, getPostById, updatePost } = useBlogStore();
 
   const navigate = useNavigate();
 
@@ -24,31 +24,25 @@ const PostEditor: React.FC = () => {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      navigate('/login', { state: { from: isEditMode ? `/edit/${id}` : '/create' } });
+      navigate('/login');
       return;
     }
 
     if (isEditMode && id) {
-      const post = getPostById(id);
-      if (!post) {
-        navigate('/not-found');
-        return;
-      }
-
-      // Check if current user is the author
-      if (user?.id !== Blog.userId) {
-        navigate('/');
-        return;
-      }
-
-      setTitle(post.title);
-      setContent(post.content);
-      setExcerpt(post.excerpt);
-      setCoverImage(post.coverImage || '');
-      setCategory(post.category);
-      setTags(post.tags);
+      getPostById(id);
     }
-  }, [id, isEditMode, isLoggedIn, user, navigate]);
+  }, [isLoggedIn, id, isEditMode, navigate, getPostById]);
+
+  useEffect(() => {
+    if (isEditMode && currentBlog) {
+      setTitle(currentBlog.title);
+      setContent(currentBlog.content);
+      setExcerpt(currentBlog.excerpt);
+      setCoverImage(currentBlog.image || '');
+      setCategory(currentBlog.category);
+      setTags(currentBlog.tag);
+    }
+  }, [currentBlog, isEditMode]);
 
   const handleAddTag = () => {
     const trimmedTag = tagInput.trim();
@@ -73,25 +67,26 @@ const PostEditor: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // const postData = {
-      //   title,
-      //   content,
-      //   excerpt,
-      //   coverImage,
-      //   category,
-      //   tags,
-      //   author: currentUser
-      // };
-      //
-        await createPost({title, content, excerpt, image, category, tag});
+      const postData = {
+        title,
+        content,
+        excerpt,
+        image:coverImage,
+        category,
+        tag: tags,
+        author: user.id
+        };
+      
+        // createPost({title, content, excerpt, image: coverImage, category, tag: tags});
 
-      // if (isEditMode && id) {
-      //   await updatePost(id, postData);
-      //   navigate(`/post/${id}`);
-      // } else {
-      //   const newPost = await createPost(postData);
-      //   navigate(`/post/${newPost.id}`);
-      // }
+      if (isEditMode && id) {
+        await updatePost(id, postData);
+        navigate(`/post/${id}`);
+      } else {
+        await createPost(postData);
+        // navigate(`/post/${newPost.id}`);
+        navigate("/");
+      }
     } catch (error) {
       console.error('Error saving post:', error);
     } finally {
@@ -279,3 +274,7 @@ const PostEditor: React.FC = () => {
 };
 
 export default PostEditor;
+// function createPost(arg0: { title: any; content: any; excerpt: any; image: any; category: any; tag: any; }) {
+//   throw new Error('Function not implemented.');
+// }
+

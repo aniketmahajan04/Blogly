@@ -20,13 +20,14 @@ export const Posts = () => {
   }, []);
 
   if (loading) return <div className="text-center mt-4">Loading...</div>;
-  if (error)
-    return <div className="text-red-500 text-center mt-4">Error: {error}</div>;
+  // if (error)
+  //   return <div className="text-red-500 text-center mt-4">Error: {error}</div>;
 
   return (
     <>
       <Navbar />
-      <div className="flex justify-center">
+      <div className={`flex justify-center ${error && 'items-center'}`}>
+        {error && <div className="text-red-500 text-center mt-4">Error: {error}</div>}
         <BlogCard blog={Blog} />
         <div className="w-sm border-l h-screen border-[rgba(128,128,128,0.2)]">
           <SuggestionBlock />

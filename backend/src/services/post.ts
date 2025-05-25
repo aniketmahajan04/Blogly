@@ -31,13 +31,13 @@ class PostService {
     }
 
     public static createPost(post: PostInterface, userId: string) {
-        const { title, excerpt, category, tag,content, image } = post;
+        const { title, excerpt, category, tag, content, image } = post;
 
         return prismaClient.post.create({
             data: {
                 title,
                 excerpt,
-                category
+                category,
                 tag,
                 content,
                 image,
@@ -47,7 +47,7 @@ class PostService {
     }
 
     public static updatePost(postId: string, post: UpdatePostInterface) {
-        const { title, excerpt, tag, content, image } = post;
+        const { title, excerpt, category, tag, content, image } = post;
 
         const updateData: any = {};
         if (title !== undefined) updateData.title = title;
@@ -65,16 +65,8 @@ class PostService {
             where: {
                 id: postId
             },
-            data: {
-                title,
-                excerpt,
-                category
-                tag,
-                content,
-                image
-            }
+            data: updateData
         })
-
     }
 
     public static deletePost(postId: string) {
