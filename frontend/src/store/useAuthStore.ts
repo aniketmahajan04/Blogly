@@ -88,7 +88,7 @@ export const useAuthStore = create<AuthStore>()(
                                 id
                                 name
                                 email
-                                image
+                                photo
                             }
                         }
                     `,

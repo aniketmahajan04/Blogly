@@ -29,7 +29,9 @@ const PostEditor: React.FC = () => {
     }
 
     if (isEditMode && id) {
-      getPostById(id);
+      (async () => {
+        await getPostById(id);
+      })();
     }
   }, [isLoggedIn, id, isEditMode, navigate, getPostById]);
 
@@ -116,7 +118,7 @@ const PostEditor: React.FC = () => {
 
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting || !title || !content}
+              // disabled={isSubmitting || !title || !content}
               type="submit"
               className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >

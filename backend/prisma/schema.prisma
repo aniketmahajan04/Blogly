@@ -32,7 +32,7 @@ model Post {
     title       String
     excerpt     String?
     content     String?
-    category    String
+    category    String?
     tag         String[]
     image       String?
     userId      String

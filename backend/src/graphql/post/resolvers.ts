@@ -30,8 +30,8 @@ const mutations = {
 
         const { id } = context.user;
 
-        await PostService.createPost(payload, id);
-        return "Post successfully created!";
+        const newPost = await PostService.createPost(payload, id);
+        return newPost;
   },
 
   updatePost: async (_: any, payload: UpdatePostInterface, context: any) => {

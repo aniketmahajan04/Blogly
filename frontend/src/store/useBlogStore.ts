@@ -53,7 +53,7 @@ const useBlogeStore = create<BlogState>((set) => ({
                 },
                 body: JSON.stringify({
                     query: `
-                      mutation CreatePost($title: String!, $excerpt: String!, $category: String!, $tag: [String!], $content: String!, $image: String!) {
+                      mutation CreatePost($title: String!, $excerpt: String!, $category: String!, $tag: [String!], $content: String!, $image: String) {
                         createPost(title: $title, excerpt: $excerpt, category: $category, tag: $tag, content: $content, image: $image) {
                           id
                           title
@@ -62,8 +62,6 @@ const useBlogeStore = create<BlogState>((set) => ({
                           tag
                           content
                           image
-                          userId
-                          postedAt
                         }
                       }
                     `,
@@ -76,7 +74,7 @@ const useBlogeStore = create<BlogState>((set) => ({
             if(!blog) {
                 throw new Error('No blog found');
             }
-            set({ Blog: [... blog], loading: false });
+            set((state) => ({Blog: [...state.Blog, blog], loading: false}))
         }catch(error){
             set({error: (error as Error).message, loading: false });
         }
