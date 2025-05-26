@@ -1,11 +1,13 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { Blogs } from "./useBlogStore";
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
   image: string;
+  posts?: Blogs[];
 }
 
 interface AuthStore {
@@ -89,6 +91,12 @@ export const useAuthStore = create<AuthStore>()(
                                 name
                                 email
                                 photo
+                                posts {
+                                  id
+                                  title
+                                  category
+                                  postedAt
+                                }
                             }
                         }
                     `,

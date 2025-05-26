@@ -32,7 +32,6 @@ const queries = {
     }
 
     return user;
-
  }
 
 };

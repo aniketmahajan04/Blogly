@@ -5,6 +5,6 @@ export const typedefs = `#graphql
     name: String
     email: String
     photo: String
+    posts: [Post!]!
   }
-
 `;

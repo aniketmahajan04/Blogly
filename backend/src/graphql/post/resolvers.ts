@@ -2,6 +2,7 @@ import PostService, {
   PostInterface,
   UpdatePostInterface
 } from "../../services/post";
+import UserService from "../../services/user";
 
 const queries = {
 
@@ -14,6 +15,16 @@ const queries = {
       if(posts.length === 0){
         throw new Error("No blogs found");
       }
+
+      const postWithAuthors = await Promise.all(
+        posts.map(async (post) => {
+          const author = await UserService.getUserById(post.userId)
+          return {
+            ...post,
+            author
+          }
+        })
+      )
       return posts;
     } catch(error){
       console.error("Error fetching posts");

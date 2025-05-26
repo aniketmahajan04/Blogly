@@ -5,24 +5,41 @@ import { Heart, Edit, Trash2, Calendar, User, Tag } from 'lucide-react';
 // import { useAuth } from '../context/AuthContext';
 import CommentSection from '../components/CommentSection';
 import { formatDate } from '../utils/formatDate';
+import { useAuthStore } from '../store/useAuthStore';
+import useBlogeStore, { Blogs } from '../store/useBlogStore';
 
 const PostDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { getPostById, likePost, unlikePost, deletePost, loading } = useBlog();
+  // const { getPostById, likePost, unlikePost, deletePost, loading } = useBlog();
   // const { currentUser, isAuthenticated } = useAuth();
-  const [post, setPost] = useState(id ? getPostById(id) : undefined);
+  const { user, isLoggedIn, loading, error } = useAuthStore();
+  const { getPostById, deletePost } = useBlogeStore();
+  const [post, setPost] = useState<Blogs | null>(null);
   const navigate = useNavigate();
   
   useEffect(() => {
-    if (id) {
-      setPost(getPostById(id));
+    const fetchPost = async () => {
+
+      if (id) {
+        const postData = await getPostById(id);
+        setPost(postData);
+      }
     }
+    fetchPost();
   }, [id, getPostById]);
   
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-600">Error: {error}</p>
       </div>
     );
   }
@@ -42,23 +59,23 @@ const PostDetailPage: React.FC = () => {
   }
 
   const handleLikeToggle = async () => {
-    if (!isAuthenticated) {
+    if (!isLoggedIn) {
       navigate('/login', { state: { from: `/post/${id}` } });
       return;
     }
     
-    if (post.isLiked) {
-      await unlikePost(post.id);
-    } else {
-      await likePost(post.id);
-    }
+    // if (post.isLiked) {
+    //   await unlikePost(post.id);
+    // } else {
+    //   await likePost(post.id);
+    // }
     
     // Update local post state with the latest data
-    setPost(getPostById(post.id));
+    setPost(await getPostById(post.id));
   };
   
   const handleDelete = async () => {
-    if (!isAuthenticated || currentUser?.id !== post.author.id) return;
+    if (!isLoggedIn || user?.id !== post.userId) return;
     
     const confirmDelete = window.confirm('Are you sure you want to delete this post? This action cannot be undone.');
     if (confirmDelete) {
@@ -103,7 +120,7 @@ const PostDetailPage: React.FC = () => {
           {/* Cover image */}
           <div className="rounded-xl overflow-hidden h-72 md:h-96 mb-8 shadow-md">
             <img
-              src={post.coverImage || 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}
+              src={post.image}
               alt={post.title}
               className="w-full h-full object-cover"
             />
@@ -121,7 +138,7 @@ const PostDetailPage: React.FC = () => {
               </Link>
               <div className="flex items-center text-gray-500 mt-2 sm:mt-0">
                 <Calendar size={16} className="mr-1" />
-                <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
+                <time dateTime={post.postedAt}>{formatDate(post.postedAt)}</time>
               </div>
             </div>
             
@@ -131,9 +148,9 @@ const PostDetailPage: React.FC = () => {
             {/* Author info and actions */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-t border-gray-100">
               <div className="flex items-center mb-4 sm:mb-0">
-                {post.author.profileImage ? (
+                {post.author.image ? (
                   <img
-                    src={post.author.profileImage}
+                    src={post.author.image}
                     alt={post.author.name}
                     className="w-12 h-12 rounded-full mr-4 object-cover"
                   />
@@ -161,7 +178,7 @@ const PostDetailPage: React.FC = () => {
                   <span>{post.likes}</span>
                 </button>
                 
-                {isAuthenticated && currentUser?.id === post.author.id && (
+                {isLoggedIn && user?.id === post.author.id && (
                   <>
                     <Link
                       to={`/edit/${post.id}`}

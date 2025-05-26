@@ -10,6 +10,7 @@ export const typedefs = `#graphql
     image: String
     userId: String!
     postedAt: String!
+    author: User!
   }
 
 `

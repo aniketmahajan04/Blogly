@@ -89,12 +89,12 @@ class UserService {
     return prismaClient.user.findUnique({
       where: {
         id
+      },
+      include:{
+        posts: true
       }
     })
   }
-
-
-
 }
 
 export default UserService;
