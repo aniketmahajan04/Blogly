@@ -4,6 +4,8 @@ import { Image, X, Save, ArrowLeft } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import  useBlogStore  from '../store/useBlogStore';
 
+//this is change
+
 const PostEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user, isLoggedIn, loading, error } = useAuthStore();
