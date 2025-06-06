@@ -7,7 +7,7 @@ export interface Blogs {
   content: string;
   excerpt: string;
   category: string;
-  tag: string[];
+  tags: string[];
   image?: string;
   userId: string;
   postedAt: string;
@@ -104,7 +104,7 @@ const useBlogeStore = create<BlogState>((set) => ({
                           title
                           excerpt
                           category
-                          tag
+                          tags
                           content
                           image
                           userId
@@ -112,7 +112,7 @@ const useBlogeStore = create<BlogState>((set) => ({
                           author {
                             id
                             name
-                            image
+                            photo
                           }
                         }
                       }
@@ -121,13 +121,38 @@ const useBlogeStore = create<BlogState>((set) => ({
       });
 
       const json = await response.json();
-      const blogs = json.data.getAllPosts;
+      
+      if (json.errors) {
+        throw new Error(json.errors[0].message);
+      }
+
+      const blogs = json.data?.getAllPosts;
       if (!blogs) {
         throw new Error("No blogs found");
       }
-      set({ Blog: [...blogs], loading: false });
+
+      // Transform the data to ensure author field is never null
+      const transformedBlogs = blogs.map((blog: any) => {
+        // If author is null or undefined, create a default author object
+        const author = blog.author || {
+          id: blog.userId,
+          name: 'Unknown Author',
+          image: ''
+        };
+
+        return {
+          ...blog,
+          author,
+          // Ensure tags is always an array
+          tags: blog.tags || []
+        };
+      });
+
+      console.log('Fetched blogs:', transformedBlogs); // Add this for debugging
+      set({ Blog: transformedBlogs, loading: false });
     } catch (error) {
-      set({ error: (error as Error).message, loading: false });
+      console.error('Error fetching posts:', error);
+      set({ error: (error as Error).message, loading: false, Blog: [] });
     }
   },
 
@@ -158,6 +183,11 @@ const useBlogeStore = create<BlogState>((set) => ({
                           image
                           userId
                           postedAt
+                          author {
+                            id
+                            name
+                            photo
+                          }
                         }
                       }
                     `,

@@ -7,27 +7,31 @@ import UserService from "../../services/user";
 const queries = {
 
   getAllPosts: async (_: any, parameter: any, context: any) => {
-    if(!context && !context.user){
+    if(!context || !context.user){
       throw new Error("Unauthorized! please login");
     }
     try{
       const posts = await PostService.getAllPosts();
       if(posts.length === 0){
-        throw new Error("No blogs found");
+        return [];
       }
 
       const postWithAuthors = await Promise.all(
         posts.map(async (post) => {
-          const author = await UserService.getUserById(post.userId)
+          const author = await UserService.getUserById(post.userId);
+          if (!author) {
+            throw new Error(`Author not found for post ${post.id}`);
+          }
           return {
             ...post,
             author
-          }
+          };
         })
-      )
-      return posts;
+      );
+      return postWithAuthors;
     } catch(error){
-      console.error("Error fetching posts");
+      console.error("Error fetching posts:", error);
+      throw error;
     }
   }
 

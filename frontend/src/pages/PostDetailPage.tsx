@@ -148,9 +148,9 @@ const PostDetailPage: React.FC = () => {
             {/* Author info and actions */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-t border-gray-100">
               <div className="flex items-center mb-4 sm:mb-0">
-                {post.author.image ? (
+                {post.author.photo ? (
                   <img
-                    src={post.author.image}
+                    src={post.author.photo}
                     alt={post.author.name}
                     className="w-12 h-12 rounded-full mr-4 object-cover"
                   />

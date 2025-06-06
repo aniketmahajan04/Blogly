@@ -17,18 +17,31 @@ export const Posts = () => {
       return;
     }
     getAllPosts();
-  }, []);
+  }, [isLoggedIn, navigate, getAllPosts]);
 
-  if (loading) return <div className="text-center mt-4">Loading...</div>;
-  // if (error)
-  //   return <div className="text-red-500 text-center mt-4">Error: {error}</div>;
+  if (loading) return (
+    <div className="min-h-screen flex justify-center items-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+    </div>
+  );
+
+  // if (error) return (
+  //   <div className="min-h-screen flex justify-center items-center">
+  //     <div className="text-red-500 text-center">Error: {error}</div>
+  //   </div>
+  // );
 
   return (
     <>
       <Navbar />
-      <div className={`flex justify-center ${error && 'items-center'}`}>
-        {error && <div className="text-red-500 text-center mt-4">Error: {error}</div>}
-        <BlogCard blog={Blog} />
+      <div className="flex justify-center">
+        {Blog && Blog.length > 0 ? (
+          <BlogCard blog={Blog} />
+        ) : (
+          <div className="text-center mt-8">
+            <p className="text-gray-500">No posts found. Start writing your first post!</p>
+          </div>
+        )}
         <div className="w-sm border-l h-screen border-[rgba(128,128,128,0.2)]">
           <SuggestionBlock />
         </div>

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Heart, MessageCircle, Clock, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark } from 'lucide-react';
 import { formatDate } from '../utils/formatDate';
 import { Blogs } from '../store/useBlogStore';
 import { Button } from './Button';
@@ -11,17 +10,18 @@ interface BlogCardProps {
 }
 // , variant = 'default'
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
+  console.log('BlogCard received blog:', blog); // Add this for debugging
+
   // const isFeatured = variant === 'featured';
   // const isCompact = variant === 'compact';
 
   return (
     <div className="container mx-auto py-10 px-4 flex flex-col items-center gap-6">
       {blog.map((post) => (
-        <div className="w-4xl h-50 flex justify-center items-center">
+        <div key={post.id} className="w-4xl h-50 flex justify-center items-center">
           <div className="w-3xl h-50 flex justify-center items-center border-b border-[rgba(128,128,128,0.2)]">
             <div
-              key={post.id}
-              className=" flex w-[688px] max-w-3xl h-40 overflow-hidden bg-white"
+              className="flex w-[688px] max-w-3xl h-40 overflow-hidden bg-white"
             >
               {/* Image section */}
               {post.image ? (

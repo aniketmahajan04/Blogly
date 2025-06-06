@@ -6,7 +6,7 @@ import  useBlogStore  from '../store/useBlogStore';
 
 const PostEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user, isLoggedIn, loading, error } = useAuthStore();
+  const { user, isLoggedIn, loading, error, profile } = useAuthStore();
   const { currentBlog, createPost, getPostById, updatePost } = useBlogStore();
 
   const navigate = useNavigate();
@@ -33,7 +33,10 @@ const PostEditor: React.FC = () => {
         await getPostById(id);
       })();
     }
-  }, [isLoggedIn, id, isEditMode, navigate, getPostById]);
+
+    // Add profile call to ensure user data is loaded
+    profile(); // this is to ensure user data is loaded
+  }, [isLoggedIn, id, isEditMode, navigate, getPostById, profile]);
 
   useEffect(() => {
     if (isEditMode && currentBlog) {

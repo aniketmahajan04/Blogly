@@ -175,8 +175,19 @@ class PostService {
       }
     }
 
-    public static getAllPosts() {
-      return prismaClient.post.findMany();
+    public static async getAllPosts() {
+      try {
+        const posts = await prismaClient.post.findMany({
+          orderBy: {
+            postedAt: 'desc'
+          }
+        });
+        console.log('Fetched posts:', posts);
+        return posts;
+      } catch (error) {
+        console.error('Error in getAllPosts:', error);
+        throw error;
+      }
     }
 
 }
