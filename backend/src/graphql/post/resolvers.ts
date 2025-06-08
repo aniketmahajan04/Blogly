@@ -1,18 +1,19 @@
+import { error } from "node:console";
 import PostService, {
   PostInterface,
-  UpdatePostInterface
+  UpdatePostInterface,
 } from "../../services/post";
 import UserService from "../../services/user";
+import { prismaClient } from "../../lib/db";
 
 const queries = {
-
   getAllPosts: async (_: any, parameter: any, context: any) => {
-    if(!context || !context.user){
+    if (!context || !context.user) {
       throw new Error("Unauthorized! please login");
     }
-    try{
+    try {
       const posts = await PostService.getAllPosts();
-      if(posts.length === 0){
+      if (posts.length === 0) {
         return [];
       }
 
@@ -24,40 +25,54 @@ const queries = {
           }
           return {
             ...post,
-            author
+            author,
           };
         })
       );
       return postWithAuthors;
-    } catch(error){
+    } catch (error) {
       console.error("Error fetching posts:", error);
       throw error;
     }
-  }
+  },
 
-}
+  getPostById: async (_: any, { id }: { id: string }, context: any) => {
+    try {
+      const post = await PostService.getPostById(id);
+      if (!post) {
+        throw new Error("Post not found");
+      }
+      const author = await UserService.getUserById(post.userId);
+      if (!author) {
+        throw new Error("Author not found");
+      }
+      return { ...post, author };
+    } catch (error) {
+      console.error("Error fetching posts by id:", error);
+    }
+  },
+};
 
 const mutations = {
-    createPost: async (_: any, payload: PostInterface, context: any) => {
-        if(!context || !context.user){
-          throw new Error("Unauthorized! please login");
-        }
+  createPost: async (_: any, payload: PostInterface, context: any) => {
+    if (!context || !context.user) {
+      throw new Error("Unauthorized! please login");
+    }
 
-        const { id } = context.user;
+    const { id } = context.user;
 
-        const newPost = await PostService.createPost(payload, id);
-        return newPost;
+    const newPost = await PostService.createPost(payload, id);
+    return newPost;
   },
 
   updatePost: async (_: any, payload: UpdatePostInterface, context: any) => {
-
-    if(!context && !context.user){
+    if (!context && !context.user) {
       throw new Error("Unauthorized! please login");
     }
 
     const post = await PostService.getPostById(payload.id);
 
-    if(!post) {
+    if (!post) {
       throw new Error("Post not found");
     }
 
@@ -65,28 +80,30 @@ const mutations = {
     return "Post successfully updated";
   },
 
-  deletePost: async (_:any, { postId }: { postId: string}, context: any) => {
-    if(!context && !context.user){
+  deletePost: async (_: any, { postId }: { postId: string }, context: any) => {
+    if (!context && !context.user) {
       throw new Error("Unauthorized! please login");
     }
     const post = await PostService.getPostById(postId);
-    if(!post) {
+    if (!post) {
       throw new Error("Post not found!");
     }
     await PostService.deletePost(postId);
     return "Post successfully deleted";
   },
 
-  createComment: async (_: any, {
-    postId,
-    body
-  }: {
-    postId: string,
-    body: string
-  },
+  createComment: async (
+    _: any,
+    {
+      postId,
+      body,
+    }: {
+      postId: string;
+      body: string;
+    },
     context: any
-    ) => {
-    if(!context || !context.user)
+  ) => {
+    if (!context || !context.user)
       throw new Error("Unauthorized! please login");
 
     const { id } = context.user;
@@ -95,82 +112,88 @@ const mutations = {
     return "successfully createComment";
   },
 
-  editComment: async (_: any, {
-    commentId,
-    body
-  }: {
-    commentId: string,
-    body: string
-  },
-  context: any) => {
-    if(!context || !context.user)
+  editComment: async (
+    _: any,
+    {
+      commentId,
+      body,
+    }: {
+      commentId: string;
+      body: string;
+    },
+    context: any
+  ) => {
+    if (!context || !context.user)
       throw new Error("Unauthorized! please login");
 
     const { id } = context.user;
-    const  comment = await PostService.getCommentById(commentId);
-    if(!comment)
-      throw new Error("Comment not found!");
+    const comment = await PostService.getCommentById(commentId);
+    if (!comment) throw new Error("Comment not found!");
 
-    if(comment.userId !== id)
+    if (comment.userId !== id)
       throw new Error("Unauthorized! you are not the owner of this comment");
 
     await PostService.editComment(commentId, body);
     return "successfully editComment";
   },
 
-  deleteComment: async (_: any, {
-    commentId,
-  }: {
-    commentId: string
-  },
-    context: any) => {
-
-      if(!context || !context.user)
-        throw new Error("Unauthorized! please login");
-      const { id } = context.user;
-
-      const comment = await PostService.getCommentById(commentId);
-      if(!comment)
-        throw new Error("Comment not found!");
-      if(comment.userId !== id) {
-        throw new Error("Unauthorized! you are not the owner of this commentId");
-      }
-
-      await PostService.deleteComment(commentId);
-      return "successfully Comment deleted";
-    },
-
-    likeBlog: async (_: any, {
-      postId
+  deleteComment: async (
+    _: any,
+    {
+      commentId,
     }: {
-      postId: string
+      commentId: string;
     },
-     context: any
-    ) => {
-      if(!context || !context.user)
-        throw new Error("Unauthorized! please login");
+    context: any
+  ) => {
+    if (!context || !context.user)
+      throw new Error("Unauthorized! please login");
+    const { id } = context.user;
 
-      const { id } = context.user;
-      const post = await PostService.getPostById(postId);
+    const comment = await PostService.getCommentById(commentId);
+    if (!comment) throw new Error("Comment not found!");
+    if (comment.userId !== id) {
+      throw new Error("Unauthorized! you are not the owner of this commentId");
+    }
 
-      if(!post)
-        throw new Error("Post not found!");
+    await PostService.deleteComment(commentId);
+    return "successfully Comment deleted";
+  },
 
-      const like = await PostService.getLikeByPostIdAndUserId(postId, id);
-      if(like)
-        throw new Error("You already liked this post!");
-      await PostService.createLike(postId, id);
-      return "successfully liked the post";
+  likeBlog: async (
+    _: any,
+    {
+      postId,
+    }: {
+      postId: string;
     },
+    context: any
+  ) => {
+    if (!context || !context.user)
+      throw new Error("Unauthorized! please login");
 
-    enhanceBlog: async (_: any, { content }: { content: string }, context: any) =>{
-      if(!context || !context.user)
-        throw new Error("Unauthorized! please login");
+    const { id } = context.user;
+    const post = await PostService.getPostById(postId);
 
-      const enhacedContent = await PostService.enhanceBlog(content);
-      return enhacedContent;
-    },
+    if (!post) throw new Error("Post not found!");
 
-}
+    const like = await PostService.getLikeByPostIdAndUserId(postId, id);
+    if (like) throw new Error("You already liked this post!");
+    await PostService.createLike(postId, id);
+    return "successfully liked the post";
+  },
+
+  enhanceBlog: async (
+    _: any,
+    { content }: { content: string },
+    context: any
+  ) => {
+    if (!context || !context.user)
+      throw new Error("Unauthorized! please login");
+
+    const enhacedContent = await PostService.enhanceBlog(content);
+    return enhacedContent;
+  },
+};
 
 export const resolvers = { queries, mutations };

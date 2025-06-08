@@ -1,8 +1,9 @@
-import React from 'react';
-import { Heart, MessageCircle, Bookmark } from 'lucide-react';
-import { formatDate } from '../utils/formatDate';
-import { Blogs } from '../store/useBlogStore';
-import { Button } from './Button';
+import React from "react";
+import { Heart, MessageCircle, Bookmark } from "lucide-react";
+import { formatDate } from "../utils/formatDate";
+import { Blogs } from "../store/useBlogStore";
+import { Button } from "./Button";
+import { Link } from "react-router-dom";
 
 interface BlogCardProps {
   blog: Blogs[];
@@ -10,19 +11,18 @@ interface BlogCardProps {
 }
 // , variant = 'default'
 const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
-  console.log('BlogCard received blog:', blog); // Add this for debugging
-
   // const isFeatured = variant === 'featured';
   // const isCompact = variant === 'compact';
 
   return (
     <div className="container mx-auto py-10 px-4 flex flex-col items-center gap-6">
       {blog.map((post) => (
-        <div key={post.id} className="w-4xl h-50 flex justify-center items-center">
+        <div
+          key={post.id}
+          className="w-4xl h-50 flex justify-center items-center"
+        >
           <div className="w-3xl h-50 flex justify-center items-center border-b border-[rgba(128,128,128,0.2)]">
-            <div
-              className="flex w-[688px] max-w-3xl h-40 overflow-hidden bg-white"
-            >
+            <div className="flex w-[688px] max-w-3xl h-40 overflow-hidden bg-white">
               {/* Image section */}
               {post.image ? (
                 <img
@@ -38,10 +38,11 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
               <div className="flex flex-col justify-between p-4 w-full">
                 <div className="h-24">
                   <h2 className="text-2xl font-bold text-gray-800">
-                    {post.title}
+                    <Link to={`/post/${post.id}`}>{post.title}</Link>
                   </h2>
-                  <p className="text-gray-700 text-sm mt-1 line-clamp-3">
-                    {post.content}
+                  <p className="text-gray-600 text-sm">{post.author.name}</p>
+                  <p className="text-gray-700 text-sm mt-2 line-clamp-3">
+                    {post.excerpt}
                   </p>
                   <p className="text-gray-400 text-xs mt-2 align-text-bottom">
                     {/* Posted on {new Date(post.postedAt).toLocaleDateString()} */}
@@ -50,7 +51,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex justify-between items-center gap-3 mt-4">
+                <div className="flex justify-between items-center gap-3 mt-6">
                   <div className="flex gap-6 ml-2">
                     <Button
                       icon={<Heart className="w-5 h-5" />}

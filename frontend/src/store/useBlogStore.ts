@@ -7,11 +7,11 @@ export interface Blogs {
   content: string;
   excerpt: string;
   category: string;
-  tags: string[];
+  tag: string[];
   image?: string;
   userId: string;
   postedAt: string;
-  author: User
+  author: User;
 }
 
 export interface NewBlog {
@@ -104,7 +104,7 @@ const useBlogeStore = create<BlogState>((set) => ({
                           title
                           excerpt
                           category
-                          tags
+                          tag
                           content
                           image
                           userId
@@ -121,7 +121,7 @@ const useBlogeStore = create<BlogState>((set) => ({
       });
 
       const json = await response.json();
-      
+
       if (json.errors) {
         throw new Error(json.errors[0].message);
       }
@@ -136,22 +136,21 @@ const useBlogeStore = create<BlogState>((set) => ({
         // If author is null or undefined, create a default author object
         const author = blog.author || {
           id: blog.userId,
-          name: 'Unknown Author',
-          image: ''
+          name: "Unknown Author",
+          image: "",
         };
 
         return {
           ...blog,
           author,
           // Ensure tags is always an array
-          tags: blog.tags || []
+          tags: blog.tags || [],
         };
       });
 
-      console.log('Fetched blogs:', transformedBlogs); // Add this for debugging
       set({ Blog: transformedBlogs, loading: false });
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
       set({ error: (error as Error).message, loading: false, Blog: [] });
     }
   },
@@ -172,7 +171,7 @@ const useBlogeStore = create<BlogState>((set) => ({
 
         body: JSON.stringify({
           query: `
-                      query GetPostById($id: ID!) {
+                      query GetPostById($id: String!) {
                         getPostById(id: $id) {
                           id
                           title
@@ -195,7 +194,17 @@ const useBlogeStore = create<BlogState>((set) => ({
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const json = await response.json();
+      console.log(json);
+
+      if (json.errors) {
+        throw new Error(json.errors[0].message || "GraphQL error");
+      }
+
       const blog = json.data.getPostById;
       if (!blog) {
         throw new Error("No blog found");
@@ -251,44 +260,44 @@ const useBlogeStore = create<BlogState>((set) => ({
 
   deletePost: async (id: string) => {
     try {
-        const token = localStorage.getItem('token');
-        if(!token){
-            throw new Error('Token not found')
-        }
-        set({loading: true, error: null})
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token not found");
+      }
+      set({ loading: true, error: null });
 
-        const response = await fetch(`${import.meta.env.VITE_GRAPHQL_URL}`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                'token': token
-            },
-            body: JSON.stringify({
-                query: `
+      const response = await fetch(`${import.meta.env.VITE_GRAPHQL_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify({
+          query: `
                 mutation DeletePost($id: ID!){
                     deletePost(id: $id){
                         id
                     }
             }    
                 `,
-                variables: {
-                    id
-                }
-            })
-        })
-        const json = await response.json();
-    const deletedBlog = json.data.deletePost;
+          variables: {
+            id,
+          },
+        }),
+      });
+      const json = await response.json();
+      const deletedBlog = json.data.deletePost;
 
-    if (!deletedBlog) {
-      throw new Error('Delete failed');
+      if (!deletedBlog) {
+        throw new Error("Delete failed");
+      }
+      set((state) => ({
+        Blog: state.Blog.filter((b) => b.id !== id),
+      }));
+    } catch (error) {
+      set({ error: (error as Error).message, loading: false });
     }
-    set((state) => ({
-        Blog: state.Blog.filter((b) => b.id !== id)
-    }))
-    } catch(error){
-        set({error: (error as Error).message, loading: false})
-    }
-  }
+  },
 }));
 
 export default useBlogeStore;

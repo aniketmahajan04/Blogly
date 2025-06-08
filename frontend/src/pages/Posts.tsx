@@ -19,17 +19,19 @@ export const Posts = () => {
     getAllPosts();
   }, [isLoggedIn, navigate, getAllPosts]);
 
-  if (loading) return (
-    <div className="min-h-screen flex justify-center items-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+      </div>
+    );
 
-  // if (error) return (
-  //   <div className="min-h-screen flex justify-center items-center">
-  //     <div className="text-red-500 text-center">Error: {error}</div>
-  //   </div>
-  // );
+  if (error)
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <div className="text-red-500 text-center">Error: {error}</div>
+      </div>
+    );
 
   return (
     <>
@@ -39,7 +41,9 @@ export const Posts = () => {
           <BlogCard blog={Blog} />
         ) : (
           <div className="text-center mt-8">
-            <p className="text-gray-500">No posts found. Start writing your first post!</p>
+            <p className="text-gray-500">
+              No posts found. Start writing your first post!
+            </p>
           </div>
         )}
         <div className="w-sm border-l h-screen border-[rgba(128,128,128,0.2)]">
