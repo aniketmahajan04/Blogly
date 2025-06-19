@@ -91,7 +91,7 @@ const PostDetailPage: React.FC = () => {
     if (!isLoggedIn || user?.id !== post.userId) return;
 
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this post? This action cannot be undone."
+      "Are you sure you want to delete this post? This action cannot be undone.",
     );
     if (confirmDelete) {
       await deletePost(post.id);
@@ -108,15 +108,15 @@ const PostDetailPage: React.FC = () => {
     // Headers
     html = html.replace(
       /# (.*?)(?:\n|$)/g,
-      '<h1 class="text-3xl font-bold my-4">$1</h1>'
+      '<h1 class="text-3xl font-bold my-4">$1</h1>',
     );
     html = html.replace(
       /## (.*?)(?:\n|$)/g,
-      '<h2 class="text-2xl font-bold my-3">$1</h2>'
+      '<h2 class="text-2xl font-bold my-3">$1</h2>',
     );
     html = html.replace(
       /### (.*?)(?:\n|$)/g,
-      '<h3 class="text-xl font-bold my-2">$1</h3>'
+      '<h3 class="text-xl font-bold my-2">$1</h3>',
     );
 
     // Bold text
@@ -128,19 +128,19 @@ const PostDetailPage: React.FC = () => {
     // Code blocks
     html = html.replace(
       /```(.*?)```/gs,
-      '<pre class="bg-gray-100 p-4 rounded-md my-4 overflow-x-auto">$1</pre>'
+      '<pre class="bg-gray-100 p-4 rounded-md my-4 overflow-x-auto">$1</pre>',
     );
 
     // Inline code
     html = html.replace(
       /`(.*?)`/g,
-      '<code class="bg-gray-100 px-1 rounded">$1</code>'
+      '<code class="bg-gray-100 px-1 rounded">$1</code>',
     );
 
     // Paragraphs
     html = html.replace(
       /(?:^|\n)(?!<h|<pre|<ul|<ol|<li|<p)(.+?)(?:\n\n|$)/g,
-      '\n<p class="my-4">$1</p>\n'
+      '\n<p class="my-4">$1</p>\n',
     );
 
     return { __html: html };
@@ -209,20 +209,20 @@ const PostDetailPage: React.FC = () => {
               </div>
 
               <div className="flex items-center space-x-4">
-                <button
-                  onClick={handleLikeToggle}
-                  className={`flex items-center space-x-1 px-4 py-2 rounded-md transition-colors ${
-                    post.isLiked
-                      ? "bg-red-50 text-red-600"
-                      : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <Heart
-                    className={post.isLiked ? "fill-red-500" : ""}
-                    size={18}
-                  />
-                  <span>{post.likes}</span>
-                </button>
+                {/* <button */}
+                {/*   onClick={handleLikeToggle} */}
+                {/*   className={`flex items-center space-x-1 px-4 py-2 rounded-md transition-colors ${ */}
+                {/*     post.isLiked */}
+                {/*       ? "bg-red-50 text-red-600" */}
+                {/*       : "bg-gray-50 text-gray-700 hover:bg-gray-100" */}
+                {/*   }`} */}
+                {/* > */}
+                {/*   <Heart */}
+                {/*     className={post.isLiked ? "fill-red-500" : ""} */}
+                {/*     size={18} */}
+                {/*   /> */}
+                {/*   <span>{post.likes}</span> */}
+                {/* </button> */}
 
                 {isLoggedIn && user?.id === post.author.id && (
                   <>

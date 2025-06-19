@@ -12,6 +12,7 @@ export interface Blogs {
   userId: string;
   postedAt: string;
   author: User;
+  comments: CommentsInterface[];
 }
 
 export interface NewBlog {
@@ -23,6 +24,13 @@ export interface NewBlog {
   image: string;
 }
 
+export interface CommentsInterface {
+  id: string;
+  body: string;
+  postId: string;
+  userId: string;
+  commentedAt: string;
+}
 interface BlogState {
   Blog: Blogs[];
   currentBlog: Blogs | null;
@@ -33,6 +41,7 @@ interface BlogState {
   getPostById: (id: string) => Promise<Blogs>;
   updatePost: (id: string, updatedPost: NewBlog) => void;
   deletePost: (id: string) => void;
+  addComment: (postId: string, body: string) => Promise<void>;
 }
 
 const useBlogeStore = create<BlogState>((set) => ({
@@ -187,6 +196,13 @@ const useBlogeStore = create<BlogState>((set) => ({
                             name
                             photo
                           }
+                          comments {
+                            id
+                            body
+                            postId
+                            userId
+                            commentedAt
+                         }
                         }
                       }
                     `,
@@ -278,7 +294,7 @@ const useBlogeStore = create<BlogState>((set) => ({
                     deletePost(id: $id){
                         id
                     }
-            }    
+            }
                 `,
           variables: {
             id,
@@ -296,6 +312,58 @@ const useBlogeStore = create<BlogState>((set) => ({
       }));
     } catch (error) {
       set({ error: (error as Error).message, loading: false });
+    }
+  },
+
+  addComment: async (postId: string, body: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token not found");
+
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch(`${import.meta.env.VITE_GRAPHQL_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify({
+          query: `
+                    mutation CreateComment($postId: String, $body: String) {
+                        createComment(postId: $postId, body: $body) {
+                           postId
+                           body
+                        }
+                    }
+                `,
+          variables: {
+            postId,
+            body,
+          },
+        }),
+      });
+      const json = await response.json();
+      if (json.errors) {
+        throw new Error(json.errors[0].message);
+      }
+      const newComment = json.data.createComment;
+      if (!newComment) {
+        throw new Error("Comment creation failed");
+      }
+      // updat currentBlog's comments if it's the same post
+      set((state) => {
+        const updatedBlog = {
+          ...state.currentBlog!,
+          comments: [...state.currentBlog!.comments, newComment],
+        };
+
+        return {
+          currentBlog: updatedBlog,
+          loading: false,
+        };
+      });
+    } catch (err) {
+      set({ error: (err as Error).message, loading: false });
     }
   },
 }));

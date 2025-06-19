@@ -1,31 +1,37 @@
-import React, { useState } from 'react';
-import { User, Clock, Trash2, Reply } from 'lucide-react';
-import { Comment } from '../types';
+import React, { useState } from "react";
+import { User, Clock, Trash2, Reply } from "lucide-react";
 // import { useAuth } from '../context/AuthContext';
 // import { useBlog } from '../context/BlogContext';
-import { formatDate } from '../utils/formatDate';
+import { formatDate } from "../utils/formatDate";
+import { useAuthStore } from "../store/useAuthStore";
+import useBlogStore, { CommentsInterface } from "../store/useBlogStore";
 
 interface CommentSectionProps {
   postId: string;
-  comments: Comment[];
+  comments: CommentsInterface[];
 }
 
-const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => {
-  const { currentUser, isAuthenticated } = useAuth();
-  const { addComment, deleteComment } = useBlog();
-  const [commentText, setCommentText] = useState('');
+const CommentSection: React.FC<CommentSectionProps> = ({
+  postId,
+  comments,
+}) => {
+  // const { user, isAuthenticated } = useAuth();
+  // const { addComment, deleteComment } = useBlog();
+  const { user, isLoggedIn, loading, error } = useAuthStore();
+  const { addComment, deleteComment } = useBlogStore();
+  const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentText.trim() || !isAuthenticated) return;
+    if (!commentText.trim() || !isLoggedIn) return;
 
     try {
       setIsSubmitting(true);
       await addComment(postId, commentText);
-      setCommentText('');
+      setCommentText("");
     } catch (error) {
-      console.error('Error submitting comment:', error);
+      console.error("Error submitting comment:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -35,7 +41,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
     try {
       await deleteComment(postId, commentId);
     } catch (error) {
-      console.error('Error deleting comment:', error);
+      console.error("Error deleting comment:", error);
     }
   };
 
@@ -44,13 +50,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
       <h3 className="text-2xl font-bold mb-6">Comments ({comments.length})</h3>
 
       {/* Comment Form */}
-      {isAuthenticated ? (
+      {isLoggedIn ? (
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="flex items-start space-x-4">
-            {currentUser?.profileImage ? (
+            {user?.photo ? (
               <img
-                src={currentUser.profileImage}
-                alt={currentUser.name}
+                src={user.photo}
+                alt={user.name}
                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               />
             ) : (
@@ -72,7 +78,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
                   disabled={isSubmitting || !commentText.trim()}
                   className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Posting...' : 'Post Comment'}
+                  {isSubmitting ? "Posting..." : "Post Comment"}
                 </button>
               </div>
             </div>
@@ -80,7 +86,16 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
         </form>
       ) : (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-8 text-center">
-          <p className="text-gray-700">Please <a href="/login" className="text-teal-600 font-medium hover:underline">login</a> to join the conversation.</p>
+          <p className="text-gray-700">
+            Please{" "}
+            <a
+              href="/login"
+              className="text-teal-600 font-medium hover:underline"
+            >
+              login
+            </a>{" "}
+            to join the conversation.
+          </p>
         </div>
       )}
 
@@ -88,7 +103,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
       <div className="space-y-6">
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment.id} className="bg-white rounded-lg border border-gray-200 p-5">
+            <div
+              key={comment.id}
+              className="bg-white rounded-lg border border-gray-200 p-5"
+            >
               <div className="flex items-start space-x-3">
                 {comment.userImage ? (
                   <img
@@ -103,10 +121,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
                 )}
                 <div className="flex-grow">
                   <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-semibold text-gray-900">{comment.userName}</h4>
+                    <h4 className="font-semibold text-gray-900">
+                      {comment.userName}
+                    </h4>
                     <div className="flex items-center text-gray-500 text-sm">
                       <Clock size={14} className="mr-1" />
-                      <time dateTime={comment.createdAt}>{formatDate(comment.createdAt)}</time>
+                      <time dateTime={comment.createdAt}>
+                        {formatDate(comment.createdAt)}
+                      </time>
                     </div>
                   </div>
                   <p className="text-gray-700 mb-3">{comment.content}</p>
@@ -115,7 +137,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
                       <Reply size={14} className="mr-1" />
                       Reply
                     </button>
-                    {currentUser?.id === comment.userId && (
+                    {user?.id === comment.userId && (
                       <button
                         onClick={() => handleDelete(comment.id)}
                         className="flex items-center text-gray-500 hover:text-red-600 text-sm transition-colors"
@@ -147,13 +169,19 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
                         )}
                         <div className="flex-grow">
                           <div className="flex items-center justify-between mb-1">
-                            <h5 className="font-medium text-gray-900">{reply.userName}</h5>
+                            <h5 className="font-medium text-gray-900">
+                              {reply.userName}
+                            </h5>
                             <div className="flex items-center text-gray-500 text-xs">
                               <Clock size={12} className="mr-1" />
-                              <time dateTime={reply.createdAt}>{formatDate(reply.createdAt)}</time>
+                              <time dateTime={reply.createdAt}>
+                                {formatDate(reply.createdAt)}
+                              </time>
                             </div>
                           </div>
-                          <p className="text-gray-700 text-sm">{reply.content}</p>
+                          <p className="text-gray-700 text-sm">
+                            {reply.content}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -164,7 +192,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, comments }) => 
           ))
         ) : (
           <div className="text-center py-8">
-            <p className="text-gray-500">Be the first to share your thoughts!</p>
+            <p className="text-gray-500">
+              Be the first to share your thoughts!
+            </p>
           </div>
         )}
       </div>

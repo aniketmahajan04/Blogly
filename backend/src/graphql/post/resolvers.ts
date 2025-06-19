@@ -1,10 +1,8 @@
-import { error } from "node:console";
 import PostService, {
   PostInterface,
   UpdatePostInterface,
 } from "../../services/post";
 import UserService from "../../services/user";
-import { prismaClient } from "../../lib/db";
 
 const queries = {
   getAllPosts: async (_: any, parameter: any, context: any) => {
@@ -27,7 +25,7 @@ const queries = {
             ...post,
             author,
           };
-        })
+        }),
       );
       return postWithAuthors;
     } catch (error) {
@@ -38,6 +36,9 @@ const queries = {
 
   getPostById: async (_: any, { id }: { id: string }, context: any) => {
     try {
+      if (!context || !context.user) {
+        throw new Error("Unauthorized! please login");
+      }
       const post = await PostService.getPostById(id);
       if (!post) {
         throw new Error("Post not found");
@@ -46,7 +47,11 @@ const queries = {
       if (!author) {
         throw new Error("Author not found");
       }
-      return { ...post, author };
+      const postComments = await PostService.getCommentByPostId(post.id);
+      if (!postComments) {
+        throw new Error("No comments yet!");
+      }
+      return { ...post, author, postComments };
     } catch (error) {
       console.error("Error fetching posts by id:", error);
     }
@@ -101,7 +106,7 @@ const mutations = {
       postId: string;
       body: string;
     },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -121,7 +126,7 @@ const mutations = {
       commentId: string;
       body: string;
     },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -144,7 +149,7 @@ const mutations = {
     }: {
       commentId: string;
     },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -167,7 +172,7 @@ const mutations = {
     }: {
       postId: string;
     },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -186,7 +191,7 @@ const mutations = {
   enhanceBlog: async (
     _: any,
     { content }: { content: string },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");

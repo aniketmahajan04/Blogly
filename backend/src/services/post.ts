@@ -105,6 +105,14 @@ class PostService {
     });
   }
 
+  public static getCommentByPostId(postId: string) {
+    return prismaClient.comments.findMany({
+      where: {
+        postId: postId,
+      },
+    });
+  }
+
   public static deleteComment(commentId: string) {
     return prismaClient.comments.delete({
       where: {

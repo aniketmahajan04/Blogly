@@ -81,7 +81,7 @@ const PostEditor: React.FC = () => {
         tag: tags,
         author: user.id
         };
-      
+
         // createPost({title, content, excerpt, image: coverImage, category, tag: tags});
 
       if (isEditMode && id) {
