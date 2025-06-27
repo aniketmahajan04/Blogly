@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Heart, Edit, Trash2, Calendar, User, Tag } from "lucide-react";
-// import { useBlog } from '../context/BlogContext';
-// import { useAuth } from '../context/AuthContext';
 import CommentSection from "../components/CommentSection";
 import { formatDate } from "../utils/formatDate";
 import { useAuthStore } from "../store/useAuthStore";
@@ -17,25 +15,24 @@ const PostDetailPage: React.FC = () => {
   // const { getPostById, likePost, unlikePost, deletePost, loading } = useBlog();
   // const { currentUser, isAuthenticated } = useAuth();
   const { user, isLoggedIn, loading, error } = useAuthStore();
-  const { getPostById, deletePost } = useBlogeStore();
-  const [post, setPost] = useState<Blogs | null>(null);
+  const { getPostById, deletePost, currentBlog: post } = useBlogeStore();
+  // const [post, setPost] = useState<Blogs | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPost = async () => {
-      if (id) {
-        try {
-          const postData = await getPostById(id);
-          setPost(postData);
-        } catch (error) {
-          console.error("Failed to fetch Post:", error);
-        }
+    // const fetchPost = async () => {
+    if (id) {
+      try {
+        getPostById(id);
+      } catch (error) {
+        console.error("Failed to fetch Post:", error);
       }
-    };
-    fetchPost();
+    }
+    // };
+    // fetchPost();
   }, [id, getPostById]);
 
-  if (loading) {
+  if (loading || !post || post.id !== id) {
     return (
       <div className="min-h-screen flex justify-center items-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
@@ -71,21 +68,21 @@ const PostDetailPage: React.FC = () => {
     );
   }
 
-  const handleLikeToggle = async () => {
-    if (!isLoggedIn) {
-      navigate("/login", { state: { from: `/post/${id}` } });
-      return;
-    }
-
-    // if (post.isLiked) {
-    //   await unlikePost(post.id);
-    // } else {
-    //   await likePost(post.id);
-    // }
-
-    // Update local post state with the latest data
-    setPost(await getPostById(post.id));
-  };
+  // const handleLikeToggle = async () => {
+  //   if (!isLoggedIn) {
+  //     navigate("/login", { state: { from: `/post/${id}` } });
+  //     return;
+  //   }
+  //
+  //   // if (post.isLiked) {
+  //   //   await unlikePost(post.id);
+  //   // } else {
+  //   //   await likePost(post.id);
+  //   // }
+  //
+  //   // Update local post state with the latest data
+  //   setPost(await getPostById(post.id));
+  // };
 
   const handleDelete = async () => {
     if (!isLoggedIn || user?.id !== post.userId) return;

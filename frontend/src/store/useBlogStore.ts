@@ -30,6 +30,7 @@ export interface CommentsInterface {
   postId: string;
   userId: string;
   commentedAt: string;
+  user: User;
 }
 interface BlogState {
   Blog: Blogs[];
@@ -41,7 +42,7 @@ interface BlogState {
   getPostById: (id: string) => Promise<Blogs>;
   updatePost: (id: string, updatedPost: NewBlog) => void;
   deletePost: (id: string) => void;
-  addComment: (postId: string, body: string) => Promise<void>;
+  addComment: (postId: string, body: string) => Promise<CommentsInterface>;
 }
 
 const useBlogeStore = create<BlogState>((set) => ({
@@ -202,6 +203,11 @@ const useBlogeStore = create<BlogState>((set) => ({
                             postId
                             userId
                             commentedAt
+                            user {
+                                id
+                                name
+                                photo
+                            }
                          }
                         }
                       }
@@ -362,6 +368,8 @@ const useBlogeStore = create<BlogState>((set) => ({
           loading: false,
         };
       });
+
+      return newComment;
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }

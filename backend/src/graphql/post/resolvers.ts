@@ -25,7 +25,7 @@ const queries = {
             ...post,
             author,
           };
-        }),
+        })
       );
       return postWithAuthors;
     } catch (error) {
@@ -47,11 +47,17 @@ const queries = {
       if (!author) {
         throw new Error("Author not found");
       }
-      const postComments = await PostService.getCommentByPostId(post.id);
-      if (!postComments) {
+      const rawComments = await PostService.getCommentByPostId(post.id);
+      const comments = await Promise.all(
+        rawComments.map(async (comment) => {
+          const user = await UserService.getUserById(comment.userId);
+          return { ...comment, user };
+        })
+      );
+      if (!comments) {
         throw new Error("No comments yet!");
       }
-      return { ...post, author, postComments };
+      return { ...post, author, comments };
     } catch (error) {
       console.error("Error fetching posts by id:", error);
     }
@@ -106,7 +112,7 @@ const mutations = {
       postId: string;
       body: string;
     },
-    context: any,
+    context: any
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -126,7 +132,7 @@ const mutations = {
       commentId: string;
       body: string;
     },
-    context: any,
+    context: any
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -149,7 +155,7 @@ const mutations = {
     }: {
       commentId: string;
     },
-    context: any,
+    context: any
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -172,7 +178,7 @@ const mutations = {
     }: {
       postId: string;
     },
-    context: any,
+    context: any
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -191,7 +197,7 @@ const mutations = {
   enhanceBlog: async (
     _: any,
     { content }: { content: string },
-    context: any,
+    context: any
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");

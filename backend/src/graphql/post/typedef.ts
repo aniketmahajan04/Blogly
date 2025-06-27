@@ -11,7 +11,7 @@ export const typedefs = `#graphql
     userId: String!
     postedAt: String!
     author: User!
-    comments: Comments
+    comments: [Comments!]
   }
     type Comments {
     id: ID!
@@ -19,5 +19,6 @@ export const typedefs = `#graphql
     postId: String!
     userId: String!
     commentedAt: String!
+    user: User!
   }
 `;
