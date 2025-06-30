@@ -43,9 +43,10 @@ interface BlogState {
   updatePost: (id: string, updatedPost: NewBlog) => void;
   deletePost: (id: string) => void;
   addComment: (postId: string, body: string) => Promise<CommentsInterface>;
+  deleteComment: (postId: string, commentId: string) => Promise<void>;
 }
 
-const useBlogeStore = create<BlogState>((set) => ({
+const useBlogStore = create<BlogState>((set) => ({
   Blog: [],
   currentBlog: null,
   loading: false,
@@ -337,8 +338,17 @@ const useBlogeStore = create<BlogState>((set) => ({
           query: `
                     mutation CreateComment($postId: String, $body: String) {
                         createComment(postId: $postId, body: $body) {
-                           postId
+                           id
                            body
+                           postId
+                           userId
+                           commentedAt
+                           user {
+                               id
+                               name
+                               photo
+                               email
+                           }
                         }
                     }
                 `,
@@ -374,6 +384,54 @@ const useBlogeStore = create<BlogState>((set) => ({
       set({ error: (err as Error).message, loading: false });
     }
   },
+  deleteComment: async (postId: string, commentId: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token not found");
+
+    set({ loading: true, error: null });
+    try {
+      await fetch(`${import.meta.env.VITE_GRAPHQL_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify({
+          query: `
+                    mutation DeleteComment($postId: String!, $commentId: String!) {
+                        deleteComment(postId: $postId, commentId: $commentId) {
+                           id
+                        }
+                    }
+                `,
+          variables: {
+            postId,
+            commentId,
+          },
+        }),
+      });
+
+      set((state) => {
+        if (!state.currentBlog) return state;
+
+        const updatedComments = state.currentBlog.comments.filter(
+          (c) => c.id !== commentId
+        );
+
+        const updatedBlog = {
+          ...state.currentBlog,
+          comments: updatedComments,
+        };
+
+        return {
+          currentBlog: updatedBlog,
+          loading: false,
+        };
+      });
+    } catch (err) {
+      set({ error: (err as Error).message, loading: false });
+    }
+  },
 }));
 
-export default useBlogeStore;
+export default useBlogStore;

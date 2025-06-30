@@ -25,7 +25,7 @@ const queries = {
             ...post,
             author,
           };
-        })
+        }),
       );
       return postWithAuthors;
     } catch (error) {
@@ -52,7 +52,7 @@ const queries = {
         rawComments.map(async (comment) => {
           const user = await UserService.getUserById(comment.userId);
           return { ...comment, user };
-        })
+        }),
       );
       if (!comments) {
         throw new Error("No comments yet!");
@@ -112,7 +112,7 @@ const mutations = {
       postId: string;
       body: string;
     },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -132,7 +132,7 @@ const mutations = {
       commentId: string;
       body: string;
     },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -155,7 +155,7 @@ const mutations = {
     }: {
       commentId: string;
     },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -178,7 +178,7 @@ const mutations = {
     }: {
       postId: string;
     },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");
@@ -197,7 +197,7 @@ const mutations = {
   enhanceBlog: async (
     _: any,
     { content }: { content: string },
-    context: any
+    context: any,
   ) => {
     if (!context || !context.user)
       throw new Error("Unauthorized! please login");

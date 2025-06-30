@@ -22,11 +22,22 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentText.trim() || !isLoggedIn) return;
+    if (!commentText.trim() || !isLoggedIn || !user) return;
 
     try {
       setIsSubmitting(true);
-      const newComment = await addComment(postId, commentText);
+      const partialNewComment = await addComment(postId, commentText);
+
+      const newComment: CommentsInterface = {
+        ...partialNewComment,
+        user: {
+          id: user.id,
+          name: user.name,
+          photo: user.photo,
+          email: user.email,
+        },
+      };
+
       setLocalComments((prev) => [...prev, newComment]);
       setCommentText("");
     } catch (error) {
@@ -39,6 +50,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   const handleDelete = async (commentId: string) => {
     try {
       await deleteComment(postId, commentId);
+      setLocalComments((prev) => prev.filter((c) => c.id !== commentId));
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
